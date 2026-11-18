@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Crèches du monde · Église Saint-Étienne d'Ohain</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;1,400&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --nuit:#0f1a2e; --nuit2:#16243d; --or:#c9a54c; --or-doux:#e3cf96;
+    --ivoire:#f6f1e6; --encre:#2a2a2a; --gris:#6b6458;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{background:var(--nuit)}
+  body{
+    font-family:'Lato',sans-serif;font-weight:300;color:var(--encre);
+    min-height:100vh;
+    background:
+      radial-gradient(ellipse at 50% -10%, rgba(201,165,76,.28) 0%, rgba(201,165,76,0) 45%),
+      linear-gradient(180deg,var(--nuit) 0%,var(--nuit2) 60%,var(--nuit) 100%);
+    position:relative;overflow-x:hidden;
+  }
+  /* ciel animé */
+  .ciel{position:fixed;top:0;left:0;right:0;height:140vh;pointer-events:none;overflow:hidden;z-index:0}
+  .ciel i{position:absolute;border-radius:50%;background:#fff;opacity:.2;animation:scintille var(--d) ease-in-out var(--r) infinite}
+  @keyframes scintille{0%,100%{opacity:.15;transform:scale(.8)}50%{opacity:.95;transform:scale(1.15)}}
+  .astre{position:fixed;left:50%;top:6vh;width:120px;height:120px;margin-left:-60px;pointer-events:none;z-index:0;will-change:transform;opacity:.9}
+  .astre::before{content:"";position:absolute;inset:-90px;border-radius:50%;background:radial-gradient(circle,rgba(227,207,150,.35) 0%,rgba(227,207,150,0) 65%)}
+  .astre svg{position:relative;width:100%;height:100%;filter:drop-shadow(0 0 14px rgba(227,207,150,.7))}
+  @media (prefers-reduced-motion:reduce){.ciel i{animation:none;opacity:.6}}
+  .page{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:36px 18px 48px}
+
+  header{text-align:center;color:var(--or-doux);margin-bottom:26px}
+  .etoile{width:54px;height:54px;margin:0 auto 14px;display:block;filter:drop-shadow(0 0 10px rgba(227,207,150,.6))}
+  .expo{font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;opacity:.85}
+  .numero{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;margin-top:6px;color:var(--or)}
+
+  .carte{
+    background:var(--ivoire);border-radius:4px;overflow:hidden;
+    box-shadow:0 20px 50px rgba(0,0,0,.45);
+    border-top:3px solid var(--or);
+  }
+  .photo{display:block;width:100%;height:auto;aspect-ratio:4/4.2;object-fit:cover;object-position:50% 40%}
+  .contenu{padding:28px 26px 30px}
+
+  h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:2.1rem;line-height:1.1;color:var(--nuit);text-align:center}
+  .pays{text-align:center;margin-top:8px;font-size:.8rem;letter-spacing:.25em;text-transform:uppercase;color:var(--gris)}
+
+  .sep{display:flex;align-items:center;gap:12px;margin:22px 0;color:var(--or)}
+  .sep::before,.sep::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--or),transparent)}
+  .sep svg{width:14px;height:14px}
+
+  .infos{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;font-size:.9rem}
+  .infos dt{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--or);font-weight:400;margin-bottom:3px}
+  .infos dd{color:var(--encre);line-height:1.4}
+
+  h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.35rem;color:var(--nuit);margin-bottom:8px}
+  p{line-height:1.65;font-size:.98rem}
+  p + p{margin-top:10px}
+  section{margin-top:4px}
+
+  .encart{
+    margin-top:22px;padding:18px 20px;background:#efe6d1;border-left:3px solid var(--or);border-radius:2px;
+  }
+  .encart h2{font-size:1.15rem;display:flex;align-items:center;gap:8px}
+
+  blockquote{
+    margin-top:24px;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;
+    font-size:1.2rem;line-height:1.45;color:var(--nuit);
+  }
+  blockquote cite{display:block;margin-top:6px;font-style:normal;font-family:'Lato',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)}
+
+  footer{text-align:center;color:var(--or-doux);opacity:.8;margin-top:28px;font-size:.75rem;letter-spacing:.15em;line-height:1.8}
+  footer .croix{width:18px;height:26px;display:block;margin:0 auto 10px;color:var(--or)}
+  footer .eglise{font-family:'Cormorant Garamond',serif;font-size:1.15rem;letter-spacing:.04em;color:var(--or-doux);display:block}
+  .liste{display:grid;gap:14px}
+  .vignette{display:flex;gap:14px;align-items:center;background:var(--ivoire);border-radius:4px;overflow:hidden;text-decoration:none;color:var(--encre);border-left:3px solid var(--or);box-shadow:0 10px 30px rgba(0,0,0,.35)}
+  .vignette img{width:92px;height:92px;object-fit:cover;flex:none}
+  .vignette b{display:block;font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--nuit);line-height:1.15}
+  .vignette span{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gris)}
+  .intro{color:var(--or-doux);text-align:center;font-family:'Cormorant Garamond',serif;font-size:1.2rem;line-height:1.5;margin:0 6px 24px}
+  .retour{display:block;text-align:center;margin-top:22px;color:var(--or-doux);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;opacity:.85}
+  .page.large{max-width:1080px}
+  .titre-section{text-align:center;color:var(--ivoire);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:2rem;line-height:1.1}
+  .sous-titre{text-align:center;color:var(--or);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;margin:8px 0 18px}
+  .visionneuse{position:relative;border-radius:4px;overflow:auto;-webkit-overflow-scrolling:touch;border-top:3px solid var(--or);box-shadow:0 20px 50px rgba(0,0,0,.45);background:#0b1322;max-height:78vh;touch-action:pan-x pan-y}
+  .plan{position:relative;width:100%;margin:0 auto;transition:width .25s ease}
+  .plan img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+  .rond{position:absolute;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:rgba(15,26,46,.88);border:2px solid var(--or-doux);color:var(--or-doux);font:600 15px/32px 'Lato',sans-serif;text-align:center;text-decoration:none;box-shadow:0 0 0 0 rgba(227,207,150,.6);animation:halo 2.6s ease-out infinite}
+  .rond:hover,.rond:focus{background:var(--or);color:var(--nuit);outline:none;animation:none}
+  .rond.attente{border-style:dashed;opacity:.75;animation:none}
+  @keyframes halo{0%{box-shadow:0 0 0 0 rgba(227,207,150,.55)}70%{box-shadow:0 0 0 14px rgba(227,207,150,0)}100%{box-shadow:0 0 0 0 rgba(227,207,150,0)}}
+  .bulle{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);white-space:nowrap;background:var(--ivoire);color:var(--nuit);font:600 .95rem 'Cormorant Garamond',serif;padding:5px 10px;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .15s}
+  .bulle small{display:block;font:400 .65rem 'Lato',sans-serif;letter-spacing:.15em;text-transform:uppercase;color:var(--gris)}
+  @media (hover:hover){.rond:hover .bulle{opacity:1}}
+  .zoom{display:flex;justify-content:center;gap:10px;margin:12px 0 4px}
+  .zoom button{width:42px;height:42px;border-radius:50%;border:1px solid var(--or);background:transparent;color:var(--or-doux);font-size:1.3rem;cursor:pointer}
+  .aide{text-align:center;color:var(--or-doux);opacity:.8;font-size:.82rem;margin:6px 0 22px}
+  .liste.grille{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
+  .vignette i{font-style:normal;flex:none;width:30px;height:30px;margin-left:-4px;border-radius:50%;border:1.5px solid var(--or);color:var(--nuit);font:600 13px/27px 'Lato',sans-serif;text-align:center}
+  .titre-bloc{color:var(--or);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;text-align:center;margin:26px 0 12px}
+  .lien-section{display:block;text-align:center;margin-top:18px;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--nuit);text-decoration:none;border:1px solid var(--or);padding:10px;border-radius:3px}
+</style>
+</head>
+<body>
+<div class="ciel" id="ciel" aria-hidden="true"></div>
+<div class="astre" id="astre" aria-hidden="true">
+  <svg viewBox="0 0 100 100">
+    <defs><linearGradient id="g2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf0cc"/><stop offset="1" stop-color="#c9a54c"/></linearGradient></defs>
+    <path fill="url(#g2)" d="M50 0 L56 40 L100 50 L56 60 L50 100 L44 60 L0 50 L44 40 Z"/>
+    <path fill="url(#g2)" opacity=".5" d="M50 22 L53 47 L78 50 L53 53 L50 78 L47 53 L22 50 L47 47 Z" transform="rotate(45 50 50)"/>
+  </svg>
+</div>
+<div class="page">
+  <header>
+    <div style="height:130px"></div>
+    <div class="expo">Crèches du monde</div>
+    <div class="numero" id="numero"></div>
+  </header>
+  <main id="vue"></main>
+  <footer>
+    <svg class="croix" viewBox="0 0 18 26" aria-hidden="true"><path fill="currentColor" d="M8 0h2v7h8v2h-8v17H8V9H0V7h8z"/></svg>
+    <span class="eglise">Église Saint-Étienne d'Ohain</span>
+    Rue de l'Église Saint-Étienne d'Ohain 31<br>
+    Exposition des crèches de Noël · Joyeux Noël
+  </footer>
+</div>
+<script>
+(function(){
+  var ciel=document.getElementById('ciel');
+  for(var k=0;k<70;k++){
+    var e=document.createElement('i'), t=Math.random()<.15?2.4:(Math.random()<.5?1.6:1.1);
+    e.style.cssText='left:'+(Math.random()*100)+'%;top:'+(Math.random()*100)+'%;width:'+t+'px;height:'+t+'px;--d:'+(2.5+Math.random()*4).toFixed(1)+'s;--r:-'+(Math.random()*6).toFixed(1)+'s';
+    if(Math.random()<.3)e.style.background='#f3e6c0';
+    ciel.appendChild(e);
+  }
+  var astre=document.getElementById('astre'), ticking=false;
+  function maj(){
+    var y=window.scrollY||0, max=Math.max(1,document.documentElement.scrollHeight-innerHeight), f=Math.min(1,y/max);
+    astre.style.transform='translateY('+(-y*0.35)+'px) scale('+(1-f*0.45)+') rotate('+(f*20)+'deg)';
+    ciel.style.transform='translateY('+(-y*0.06)+'px)';
+    ticking=false;
+  }
+  addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(maj)}},{passive:true});
+
+  var SEP='<div class="sep"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M5 0L6 4L10 5L6 6L5 10L4 6L0 5L4 4Z"/></svg></div>';
+  function esc(t){return String(t).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
+  var creches=[], sections=[];
+  function trouve(id){return creches.filter(function(x){return x.id===id})[0]}
+  function sectionDe(id){return sections.filter(function(s){return s.points.some(function(p){return p.id===id})})[0]}
+
+  function accueil(){
+    document.title="Crèches du monde · Église Saint-Étienne d'Ohain";
+    document.getElementById('numero').textContent='';
+    var h='<p class="intro">Bienvenue. Scannez le QR code de chaque section, puis touchez une crèche sur la photo pour découvrir son pays et son histoire.</p>';
+    if(sections.length){
+      h+='<div class="titre-bloc">Les sections</div><div class="liste">';
+      sections.forEach(function(s){
+        h+='<a class="vignette" href="#'+s.id+'"><img src="'+s.photo+'" alt="" loading="lazy"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>';
+      });
+      h+='</div>';
+    }
+    h+='<div class="titre-bloc">Toutes les crèches</div><div class="liste">';
+    creches.forEach(function(c){
+      h+='<a class="vignette" href="#'+c.id+'"><img src="'+c.photo+'" alt="" loading="lazy"><div><b>'+esc(c.titre)+'</b><span>'+esc(c.pays)+'</span></div></a>';
+    });
+    return h+'</div>';
+  }
+  function section(s){
+    document.title=s.titre+' · Crèches du monde';
+    document.getElementById('numero').textContent='';
+    var h='<h1 class="titre-section">'+esc(s.titre)+'</h1><div class="sous-titre">'+esc(s.sousTitre||'Section')+'</div>';
+    h+='<div class="visionneuse" id="visio"><div class="plan" id="plan"><img src="'+s.photo+'" alt="Vue d\'ensemble de la section '+esc(s.titre)+'">';
+    var liste='';
+    s.points.forEach(function(p,i){
+      var c=trouve(p.id), n=(c&&c.numero)?c.numero:(i+1);
+      if(c){
+        h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+esc(c.titre)+'">'+n+'<span class="bulle">'+esc(c.titre)+'<small>'+esc(c.pays.split(' · ')[0])+'</small></span></a>';
+        liste+='<a class="vignette" href="#'+c.id+'"><img src="'+c.photo+'" alt="" loading="lazy"><i style="background:var(--or-doux)">'+n+'</i><div><b>'+esc(c.titre)+'</b><span>'+esc(c.pays)+'</span></div></a>';
+      } else {
+        h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" title="Fiche en préparation">'+n+'</span>';
+      }
+    });
+    h+='</div></div><div class="zoom"><button type="button" data-z="-1" aria-label="Dézoomer">−</button><button type="button" data-z="1" aria-label="Zoomer">+</button></div>';
+    h+='<p class="aide">Touchez un rond pour ouvrir la fiche de la crèche.</p>';
+    h+='<div class="liste grille">'+liste+'</div><a class="retour" href="#">Accueil</a>';
+    return h;
+  }
+  function fiche(c){
+    document.title=c.titre+' · Crèches du monde';
+    document.getElementById('numero').textContent=c.numero?('Crèche n° '+c.numero):'';
+    var h='<article class="carte"><img class="photo" src="'+c.photo+'" alt="'+esc(c.alt)+'"><div class="contenu">';
+    h+='<h1>'+esc(c.titre)+'</h1><div class="pays">'+esc(c.pays)+'</div>'+SEP+'<dl class="infos">';
+    c.infos.forEach(function(i){h+='<div><dt>'+esc(i[0])+'</dt><dd>'+esc(i[1])+'</dd></div>'});
+    h+='</dl>'+SEP;
+    c.sections.forEach(function(s,n){
+      h+='<section'+(n?' style="margin-top:20px"':'')+'><h2>'+esc(s.titre)+'</h2>';
+      s.texte.forEach(function(p){h+='<p>'+esc(p)+'</p>'});
+      h+='</section>';
+    });
+    h+='<div class="encart"><h2>✦ Le saviez-vous&nbsp;?</h2><p>'+esc(c.saviez)+'</p></div>';
+    h+='<blockquote>«&nbsp;'+esc(c.verset.texte)+'&nbsp;»<cite>'+esc(c.verset.ref)+'</cite></blockquote>';
+    var s=sectionDe(c.id);
+    if(s) h+='<a class="lien-section" href="#'+s.id+'">Voir dans sa section · '+esc(s.titre)+'</a>';
+    h+='</div></article><a class="retour" href="#">Accueil</a>';
+    return h;
+  }
+  var zoom=1, base=0;
+  function taille(){
+    var plan=document.getElementById('plan'), v=document.getElementById('visio'); if(!plan) return;
+    var img=plan.querySelector('img'); if(!img.naturalWidth) return;
+    // à zoom 1, toute la photo tient dans l'écran (utile pour les photos en hauteur sur ordinateur)
+    base=Math.min(v.clientWidth, window.innerHeight*0.78*img.naturalWidth/img.naturalHeight);
+    plan.style.width=(base*zoom)+'px';
+  }
+  addEventListener('resize',taille);
+  function brancherZoom(){
+    var plan=document.getElementById('plan'); if(!plan) return;
+    zoom=1; var img=plan.querySelector('img');
+    if(img.complete) taille(); else img.addEventListener('load',taille);
+    document.querySelectorAll('.zoom button').forEach(function(b){
+      b.addEventListener('click',function(){
+        var v=document.getElementById('visio'), cx=(v.scrollLeft+v.clientWidth/2)/plan.offsetWidth, cy=(v.scrollTop+v.clientHeight/2)/plan.offsetHeight;
+        zoom=Math.max(1,Math.min(3,zoom+Number(b.dataset.z)*0.75));
+        plan.style.width=(base*zoom)+'px';
+        setTimeout(function(){v.scrollLeft=cx*plan.offsetWidth-v.clientWidth/2; v.scrollTop=cy*plan.offsetHeight-v.clientHeight/2;},260);
+      });
+    });
+  }
+  function route(){
+    var id=location.hash.replace('#',''), c=trouve(id), s=sections.filter(function(x){return x.id===id})[0];
+    document.querySelector('.page').classList.toggle('large',!!s);
+    document.getElementById('vue').innerHTML=c?fiche(c):(s?section(s):accueil());
+    brancherZoom();
+    window.scrollTo(0,0); maj();
+  }
+  Promise.all([
+    fetch('creches.json').then(function(r){return r.json()}),
+    fetch('sections.json').then(function(r){return r.ok?r.json():[]}).catch(function(){return []})
+  ]).then(function(d){creches=d[0];sections=d[1];route()});
+  addEventListener('hashchange',route);
+})();
+</script>
+</body>
+</html>

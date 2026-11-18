@@ -1,0 +1,4 @@
+[
+ {"id":"s-essai","titre":"Le meuble aux trois crèches","sousTitre":"Section d'essai","photo":"s-essai.jpg",
+  "points":[{"id":"C-001","x":21,"y":70},{"id":"C-002","x":46,"y":51},{"id":"C-003","x":79,"y":70}]}
+]
