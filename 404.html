@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html lang="fr"><head><meta charset="utf-8"><title>Crèches du monde</title>
+<script>
+// Adresses courtes pour les QR codes : /c/C-012 → fiche, /s/nom → section, /don, /contact…
+(function(){
+  var p=location.pathname.replace(/\/+$/,'').split('/').filter(Boolean), h='';
+  if(p[0]==='c'&&p[1]) h=p[1].toUpperCase();
+  else if(p[0]==='s'&&p[1]) h='s-'+p[1].toLowerCase();
+  else if(['creches','carte','don','contact','a-propos','mentions-legales'].indexOf(p[0])>=0) h=p[0];
+  location.replace('/'+(h?'#'+h:''));
+})();
+</script></head><body style="background:#0f1a2e"></body></html>
