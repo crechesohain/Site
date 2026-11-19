@@ -216,7 +216,7 @@
     P.forEach(function(p,i){
       var s=pl.liste[i]; if(!s) return;
       var nom=p.nom||'Un visiteur', hh=Math.round(s.w*200/140);
-      h+='<button type="button" class="tous-perso'+(p.id===moi?' moi':'')+'" style="left:'+s.x+'px;top:'+(s.y*H)+'px;width:'+s.w+'px;height:'+hh+'px;z-index:'+Math.round(s.y*100)+'" aria-label="'+esc(nom)+'">'+personnage(p.config,s.w)+'<span class="tip">'+esc(nom)+'</span></button>';
+      h+='<button type="button" class="tous-perso" style="left:'+s.x+'px;top:'+(s.y*H)+'px;width:'+s.w+'px;height:'+hh+'px;z-index:'+Math.round(s.y*100)+'" aria-label="'+esc(nom)+'">'+personnage(p.config,s.w)+'<span class="tip">'+esc(nom)+'</span></button>';
     });
     h+='</div></div></div><button type="button" class="tous-voir-tout" id="tousVoirTout" hidden>Voir toute la crèche</button></div>';
     var e=E[choixEtoile];
@@ -256,10 +256,8 @@
       f.scrollLeft=x*z-f.clientWidth/2; f.scrollTop=y*z-f.clientHeight/2;
     }
     // départ : centré sur l'étable, ou zoomé sur « mon » personnage
-    var cible=f.querySelector('.tous-perso.moi');
     if(zmin<1) zoomer(zmin,0,0);
     f.scrollLeft=(f.scrollWidth-f.clientWidth)/2;
-    if(cible){ viser(cible,2.2); cible.focus({preventScroll:true}); }
     voir.addEventListener('click',function(){ zoomer(zmin,f.clientWidth/2,f.clientHeight/2); f.scrollLeft=(f.scrollWidth-f.clientWidth)/2; });
     // molette : vers le haut = zoom avant ; vers le bas = zoom arrière, puis la page défile normalement
     f.addEventListener('wheel',function(e){
