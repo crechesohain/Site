@@ -231,7 +231,15 @@ function majEtoile(y, max) {
     var d=site.don||{};
     var h='<h1>Soutenir l\'église Saint-Étienne</h1>';
     h+='<p>L\'exposition est libre d\'accès. Si elle vous a touché, vous pouvez soutenir l\'église Saint-Étienne d\'Ohain par un don, petit ou grand. Merci&nbsp;!</p>';
+    if(d.payconiq){
+      h+='<div class="payconiq"><h2>Avec Payconiq</h2>';
+      h+='<a class="bouton" href="'+esc(d.payconiq)+'" rel="noopener">Ouvrir Payconiq</a>';
+      h+='<p class="note sur-mobile">Le bouton ouvre l\'application Payconiq ou celle de votre banque&nbsp;: choisissez le montant, c\'est tout.</p>';
+      h+='<img class="qr-payconiq" src="payconiq-qr.svg" width="200" height="200" alt="QR code Payconiq de l\'église Saint-Étienne d\'Ohain">';
+      h+='<p class="note sur-ordi">Scannez ce code avec l\'application Payconiq ou celle de votre banque. Le même code est affiché dans l\'église.</p></div>';
+    }
     if(d.iban){
+      if(d.payconiq) h+='<h2>Par virement</h2>';
       h+='<dl class="encadre-don">';
       if(d.titulaire) h+='<dt>Bénéficiaire</dt><dd>'+esc(d.titulaire)+'</dd>';
       h+='<dt>IBAN</dt><dd id="iban">'+esc(d.iban)+'</dd>';
@@ -239,7 +247,7 @@ function majEtoile(y, max) {
       if(d.communication) h+='<dt>Communication</dt><dd>'+esc(d.communication)+'</dd>';
       h+='</dl><button type="button" class="bouton" id="copier">Copier l\'IBAN</button>';
       h+='<p class="note">Sur place, un QR code de virement est affiché à l\'entrée de l\'église : scannez-le avec l\'application de votre banque.</p>';
-    } else {
+    } else if(!d.payconiq){
       h+='<p class="note">Les coordonnées bancaires seront publiées très prochainement.</p>';
     }
     return carte(h);

@@ -402,3 +402,10 @@ blockquote::before{
 .zoom{min-height:52px}
 .zoom .voir-tout{width:auto;height:auto;min-height:44px;padding:0 18px;border-radius:22px;font:400 .85rem 'Lato',sans-serif;letter-spacing:.08em;visibility:hidden;opacity:0;transition:opacity .2s}
 body:has(.visionneuse.zoome) .zoom .voir-tout{visibility:visible;opacity:1}
+
+/* Don Payconiq */
+.payconiq{margin-top:18px;background:#efe6d1;border-left:3px solid var(--or);padding:16px 18px;border-radius:2px;text-align:center}
+.payconiq h2{margin-top:0}
+.qr-payconiq{display:block;margin:16px auto 0;width:200px;height:200px;background:#fff;padding:8px;border-radius:4px}
+.payconiq .sur-ordi{display:block}.payconiq .sur-mobile{display:none}
+@media (max-width:700px){.qr-payconiq,.payconiq .sur-ordi{display:none}.payconiq .sur-mobile{display:block}}

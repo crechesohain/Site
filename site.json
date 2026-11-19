@@ -11,7 +11,8 @@
     "titulaire": "",
     "iban": "",
     "bic": "",
-    "communication": "Don – exposition des crèches"
+    "communication": "Don – exposition des crèches",
+    "payconiq": "HTTPS://PAYCONIQ.COM/MERCHANT/1/68ADF611B81EF86ADD4E3E13"
   },
   "temoignage": {
     "type": "",
