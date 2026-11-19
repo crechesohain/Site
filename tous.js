@@ -219,7 +219,6 @@
       h+='<button type="button" class="tous-perso'+(p.id===moi?' moi':'')+'" style="left:'+s.x+'px;top:'+(s.y*H)+'px;width:'+s.w+'px;height:'+hh+'px;z-index:'+Math.round(s.y*100)+'" aria-label="'+esc(nom)+'">'+personnage(p.config,s.w)+'<span class="tip">'+esc(nom)+'</span></button>';
     });
     h+='</div></div></div><button type="button" class="tous-voir-tout" id="tousVoirTout" hidden>Voir toute la crèche</button></div>';
-    if(P.length) h+='<form class="tous-cherche" id="tousCherche" role="search"><label for="tousNomCherche">Retrouve un personnage</label><div><input id="tousNomCherche" type="search" placeholder="Son nom" autocomplete="off"><button type="submit" class="bouton">Chercher</button></div><p id="tousTrouve" aria-live="polite"></p></form>';
     var e=E[choixEtoile];
     h+='<div class="tous-intention" role="status" id="intention">'+(e?'<small>Étoile allumée par '+esc(e.signature||'Anonyme')+'</small><p>«&nbsp;'+esc(e.texte)+'&nbsp;»</p>':'<small>Touchez une étoile</small><p>Chaque étoile porte l\'intention d\'un visiteur.</p>')+'</div>';
     return h;
@@ -287,25 +286,6 @@
         document.getElementById('intention').innerHTML='<small>Étoile allumée par '+esc(e.signature||'Anonyme')+'</small><p>«&nbsp;'+esc(e.texte)+'&nbsp;»</p>';
       });
     });
-    // retrouver un personnage par son nom
-    var form=document.getElementById('tousCherche');
-    if(form){
-      var trouves=[], rang=-1, dernier='';
-      form.addEventListener('submit',function(e){
-        e.preventDefault();
-        var q=sansAccent(document.getElementById('tousNomCherche').value), sortie=document.getElementById('tousTrouve');
-        f.querySelectorAll('.tous-perso.trouve').forEach(function(x){x.classList.remove('trouve')});
-        if(!q){sortie.textContent='';return}
-        if(q!==dernier){
-          dernier=q; rang=-1;
-          trouves=[].slice.call(f.querySelectorAll('.tous-perso')).filter(function(b){return sansAccent(b.getAttribute('aria-label')).indexOf(q)>=0});
-        }
-        if(!trouves.length){sortie.textContent='Aucun personnage à ce nom pour l\'instant.';return}
-        rang=(rang+1)%trouves.length; var el=trouves[rang];
-        el.classList.add('trouve'); viser(el,2.4); el.focus({preventScroll:true});
-        sortie.textContent=trouves.length>1?('Personnage '+(rang+1)+' sur '+trouves.length+' · appuie encore sur « Chercher » pour voir le suivant.'):'Le voici !';
-      });
-    }
   }
 
   /* ---------- création d'un personnage ---------- */

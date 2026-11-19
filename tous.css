@@ -8,7 +8,7 @@
 .tous-fresque{height:640px;overflow:auto;touch-action:pan-x pan-y;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:var(--or) transparent;cursor:grab;-webkit-overflow-scrolling:touch}
 .tous-fresque:active{cursor:grabbing}
 .tous-fresque:focus-visible{outline:2px solid var(--or-doux);outline-offset:-2px}
-.tous-scene{position:relative;min-width:100%;background:radial-gradient(ellipse at 50% 30%,#1f3256 0%,#16243d 40%,#0f1a2e 100%);overflow:hidden;user-select:none;-webkit-user-select:none}
+.tous-scene{position:relative;background:radial-gradient(ellipse at 50% 30%,#1f3256 0%,#16243d 40%,#0f1a2e 100%);overflow:hidden;user-select:none;-webkit-user-select:none}
 .tous-scene svg{overflow:visible}
 .tous-sol{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,#2a2a35 0%,#1d1b24 100%);border-top:1px solid rgba(201,165,76,.35)}
 .tous-bethleem{position:absolute;left:50%;top:38px;width:0;height:0}
@@ -93,15 +93,4 @@ button.lien{background:none;border:0;color:var(--or-doux);text-decoration:underl
 .tous-scene{position:absolute;left:0;top:0;transform-origin:0 0}
 .tous-voir-tout{position:absolute;right:12px;bottom:12px;z-index:10;min-height:44px;padding:0 16px;border-radius:22px;border:1px solid var(--or);background:rgba(15,26,46,.85);color:var(--or-doux);font:400 .85rem 'Lato',sans-serif;letter-spacing:.08em;cursor:pointer}
 .tous-voir-tout[hidden]{display:none}
-.tous-perso.trouve{z-index:160 !important}
-.tous-perso.trouve::before{content:"";position:absolute;inset:-10px -8px;border-radius:50%;box-shadow:0 0 0 2px var(--or-doux),0 0 22px 6px rgba(227,207,150,.55);animation:tous-pulse 1.6s ease-in-out infinite}
-.tous-perso.trouve .tip{opacity:1}
-@keyframes tous-pulse{0%,100%{opacity:.5}50%{opacity:1}}
-@media (prefers-reduced-motion:reduce){.tous-perso.trouve::before{animation:none}}
-.tous-cherche{max-width:640px;margin:16px auto 0;text-align:center}
-.tous-cherche label{display:block;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:var(--or);margin-bottom:8px}
-.tous-cherche div{display:flex;gap:8px;justify-content:center}
-.tous-cherche input{flex:1;max-width:320px;min-height:46px;border-radius:6px;border:1px solid rgba(201,165,76,.5);background:rgba(246,241,230,.06);color:var(--ivoire);padding:0 14px;font:400 1rem 'Lato',sans-serif}
-.tous-cherche .bouton{margin-top:0;min-height:46px;padding:0 18px}
-.tous-cherche p{min-height:1.4em;margin:8px 0 0;color:var(--or-doux);font-size:.95rem}
-@media (max-width:720px){.tous-fresque{height:min(640px,72vh)}}
+@media (prefers-reduced-motion:reduce){@media (max-width:720px){.tous-fresque{height:min(640px,72vh)}}
