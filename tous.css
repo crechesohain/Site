@@ -47,7 +47,7 @@
 .tous-genre{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 8px;border-radius:8px;cursor:pointer;color:var(--ivoire);background:rgba(246,241,230,.05);border:1px solid rgba(201,165,76,.35);font:400 1rem 'Lato',sans-serif}
 .tous-genre.on{background:rgba(201,165,76,.18);border:2px solid var(--or)}
 .tous-genre b{font-size:1.1rem}
-.tous-apercu{height:250px;border-radius:8px;background:radial-gradient(ellipse at 50% 85%,rgba(227,207,150,.28) 0%,#0b1322 70%);border:1px solid rgba(201,165,76,.45);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;margin-bottom:14px}
+.tous-apercu{position:relative;overflow:hidden;height:250px;border-radius:8px;background:radial-gradient(ellipse at 50% 85%,rgba(227,207,150,.28) 0%,#0b1322 70%);border:1px solid rgba(201,165,76,.45);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;margin-bottom:14px}
 .tous-parties{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
 .tous-choix{border:0;padding:0;margin:0 0 14px}
 .tous-choix legend{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--or);margin-bottom:8px;padding:0}
@@ -80,3 +80,9 @@ button.lien{background:none;border:0;color:var(--or-doux);text-decoration:underl
 .onglet:focus-visible{outline:2px solid var(--or-doux);outline-offset:-2px}
 .tous-panneau{background:rgba(246,241,230,.05);border:1px solid rgba(201,165,76,.25);border-top:0;border-radius:0 0 8px 8px;padding:12px 12px 2px;margin-bottom:14px}
 .tous-panneau .tous-choix legend{color:var(--or-doux);letter-spacing:.04em;text-transform:none;font-size:.95rem}
+/* aperçu zoomé */
+.tous-zoom{position:absolute;left:50%;bottom:6px;width:150px;height:214px;margin-left:-75px;transition:transform .45s cubic-bezier(.3,.7,.3,1)}
+@media (prefers-reduced-motion:reduce){.tous-zoom{transition:none}}
+/* onglets : jamais coupés, ils passent à la ligne au besoin */
+.tous-parties{flex-wrap:wrap;overflow:visible;justify-content:flex-start}
+.onglet{padding:0 10px}

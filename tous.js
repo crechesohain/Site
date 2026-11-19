@@ -14,7 +14,7 @@
     teint: [['#f6dcc4','Peau très claire'],['#e8c19c','Peau claire'],['#d9a77f','Peau mate'],['#a8714a','Peau brune'],['#6e4a32','Peau foncée']],
     cheveux: [['court','Courts'],['ras','Ras'],['frange','Frange'],['raie','Raie'],['boucle','Bouclés'],['milong','Mi-longs'],['long','Longs'],['nattes','Nattes'],['chignon','Chignon']],
     couleurCheveux: [['#1f1a17','Noirs'],['#4a3324','Bruns'],['#8a5a34','Châtains'],['#c9a05a','Blonds'],['#a8452a','Roux'],['#b8b2a8','Gris']],
-    yeux: [['grands','Grands'],['points','Petits'],['rieurs','Rieurs'],['doux','Fermés']],
+    yeux: [['grands','Grands'],['points','Petits'],['amande','En amande'],['rieurs','Rieurs'],['clin','Clin d\'œil'],['doux','Fermés']],
     sourcils: [['fins','Fins'],['arques','Arqués'],['epais','Épais'],['aucun','Discrets']],
     nez: [['point','Petit'],['bouton','Bouton'],['arrondi','Arrondi'],['long','Long']],
     bouche: [['sourire','Sourire'],['grand','Grand sourire'],['petite','Petite'],['etonne','Étonnée']],
@@ -42,7 +42,9 @@
     var HB={long:'M24 50 Q24 22 50 22 Q76 22 76 50 L80 104 Q50 112 20 104 Z',nattes:'M19 64 a7 22 0 1 0 14 0 a7 22 0 1 0 -14 0 M67 64 a7 22 0 1 0 14 0 a7 22 0 1 0 -14 0',chignon:rond(50,23,11),milong:'M24 50 Q24 22 50 22 Q76 22 76 50 L78 80 Q50 86 22 80 Z'};
     var HF={court:'M26 48 Q26 24 50 24 Q74 24 74 48 Q66 36 50 36 Q34 36 26 48 Z',frange:'M26 50 Q26 24 50 24 Q74 24 74 50 L72 43 L28 43 Z',boucle:'M27 47 a8 8 0 1 1 6 -14 a9 9 0 0 1 17 -7 a9 9 0 0 1 17 7 a8 8 0 1 1 6 14 Q50 34 27 47 Z',raie:'M26 50 Q24 22 52 24 Q76 26 74 50 Q70 34 56 32 Q40 34 26 50 Z',ras:'M26.5 45 Q26 25 50 25 Q74 25 73.5 45 Q71 36 63 34 Q50 31.5 37 34 Q29 36 26.5 45 Z',long:'M26 52 Q26 24 50 24 Q74 24 74 52 Q70 34 50 32 Q30 34 26 52 Z'};
     var avant={long:'long',nattes:'long',chignon:'long',milong:'long'}[c.cheveux]||c.cheveux;
-    var EY={points:{f:rond(41,52,2.6)+' '+rond(59,52,2.6)},grands:{b:rond(41,52,4.6)+' '+rond(59,52,4.6),f:rond(42,53,2.4)+' '+rond(60,53,2.4)},rieurs:{s:'M37 53 Q41 48 45 53 M55 53 Q59 48 63 53'},doux:{s:'M37 51 Q41 55 45 51 M55 51 Q59 55 63 51'}}[c.yeux];
+    var EY={points:{f:rond(41,52,2.6)+' '+rond(59,52,2.6)},grands:{b:rond(41,52,4.6)+' '+rond(59,52,4.6),f:rond(42,53,2.4)+' '+rond(60,53,2.4),r:rond(43,51.5,.9)+' '+rond(61,51.5,.9)},
+      amande:{b:'M36.5 52 Q41 47 45.5 52 Q41 55.5 36.5 52 Z M54.5 52 Q59 47 63.5 52 Q59 55.5 54.5 52 Z',f:rond(41,51.8,2)+' '+rond(59,51.8,2),r:rond(41.8,51.2,.6)+' '+rond(59.8,51.2,.6)},
+      clin:{b:rond(41,52,4.6),f:rond(42,53,2.4),r:rond(43,51.5,.9),s:'M55 53 Q59 49 63 53'},rieurs:{s:'M37 53 Q41 48 45 53 M55 53 Q59 48 63 53'},doux:{s:'M37 51 Q41 55 45 51 M55 51 Q59 55 63 51'}}[c.yeux];
     var BR={fins:['M37 45 L45 44 M55 44 L63 45',1.4],arques:['M36 46 Q41 41 46 45 M54 45 Q59 41 64 46',1.8],epais:['M36 45 L46 43.5 M54 43.5 L64 45',3.4],aucun:['',1]}[c.sourcils];
     var NO={point:[rond(50,59,1.3),''],bouton:[rond(50,59,2),''],arrondi:['','M46.5 59 Q50 63 53.5 59'],long:['','M50 53 L47.5 60 L51 60']}[c.nez];
     var MO={sourire:['','M43 65 Q50 71 57 65'],grand:['M42 64 Q50 76 58 64 Z',''],petite:['','M47 67 Q50 68.5 53 67'],etonne:[rond(50,67,2.6),'']}[c.bouche];
@@ -63,7 +65,7 @@
     if(cache) s+=chemin('M21 58 Q21 18 50 18 Q79 18 79 58 L76 100 L67 72 Q68 32 50 32 Q32 32 33 72 L24 100 Z','fill:#cdbb94');
     else s+=chemin(HF[avant]||'','fill:'+c.couleurCheveux);
     s+=chemin('M33 61 a4 3 0 1 0 8 0 a4 3 0 1 0 -8 0 M59 61 a4 3 0 1 0 8 0 a4 3 0 1 0 -8 0','fill:#d9786e;fill-opacity:.3');
-    s+=chemin(EY.b||'','fill:#fff;stroke:#2a2a2a;stroke-width:.8')+chemin(EY.f||'','fill:#2a2a2a')+chemin(EY.s||'','fill:none;stroke:#2a2a2a;stroke-width:2;stroke-linecap:round');
+    s+=chemin(EY.b||'','fill:#fff;stroke:#2a2a2a;stroke-width:.8')+chemin(EY.f||'','fill:#2a2a2a')+chemin(EY.r||'','fill:#fff')+chemin(EY.s||'','fill:none;stroke:#2a2a2a;stroke-width:2;stroke-linecap:round');
     s+=chemin(BR[0],'fill:none;stroke:'+c.couleurCheveux+';stroke-width:'+BR[1]+';stroke-linecap:round');
     s+=chemin(NO[0],'fill:#000;fill-opacity:.25')+chemin(NO[1],'fill:none;stroke:#000;stroke-opacity:.35;stroke-width:1.5;stroke-linecap:round');
     s+=chemin(MO[0],'fill:#6e2e2a')+chemin(MO[1],'fill:none;stroke:#6e2e2a;stroke-width:2;stroke-linecap:round');
@@ -195,6 +197,19 @@
     });
     return h+'</div></fieldset>';
   }
+  /* zoom de l'aperçu : sur le visage quand on règle le visage, en pied pour les vêtements */
+  function zoom(){
+    var z=1, y=107;
+    if(C.etape===1){
+      if(/^(yeux|sourcils|nez|bouche)$/.test(C.partie)){z=3.1;y=58}
+      else if(C.partie==='teint'){z=2.2;y=62}
+      else {z=1.8;y=72}
+    }
+    if(C.etape===3&&C.zoomTete){z=2;y=50}
+    var dy=z===1?0:Math.round(125-(30+y));
+    return {y:y,t:'translateY('+dy+'px) scale('+z+')'};
+  }
+  var zoomAvant='';
   function creer(){
     if(!ACTIF) return fresque();
     var titres=['Tu es…','Ton visage','Tes vêtements','Tes accessoires','Son nom','Te voilà dans la crèche&nbsp;!'];
@@ -210,7 +225,7 @@
       });
       h+='</div><p class="tous-aide">Tu pourras tout changer ensuite&nbsp;: visage, vêtements, accessoires.</p>';
     } else {
-      h+='<div class="tous-apercu">'+personnage(C.c,150)+'</div>';
+      h+='<div class="tous-apercu"><div class="tous-zoom" style="transform-origin:75px '+zoom().y+'px;transform:'+zoom().t+'">'+personnage(C.c,150)+'</div></div>';
     }
     if(e===1){
       h+='<div class="tous-onglets-titre">Partie du visage</div><div class="tous-parties" role="tablist" aria-label="Partie du visage">';
@@ -239,6 +254,15 @@
   }
   function brancherCreer(){
     var box=document.querySelector('.tous-creer'); if(!box) return;
+    var zb=box.querySelector('.tous-zoom');
+    if(zb){
+      var cible=zb.style.transform, origine=zb.style.transformOrigin;
+      if(zoomAvant&&zoomAvant.t!==cible){
+        zb.style.transition='none'; zb.style.transformOrigin=zoomAvant.o; zb.style.transform=zoomAvant.t; zb.getBoundingClientRect();
+        zb.style.transition=''; zb.style.transformOrigin=origine; zb.style.transform=cible;
+      }
+      zoomAvant={t:cible,o:origine};
+    } else zoomAvant='';
     function refaire(focus){
       var b=document.querySelector('.tous-creer'); if(!b) return;
       b.outerHTML=creer(); brancherCreer();
@@ -250,6 +274,7 @@
         if(k==='genre') c.cheveux=v==='fille'?'long':'court';
         if(k==='tenue'&&v==='ange'){c.couleur='#efe6d2';c.tete='aureole'}
         if(k==='tenue'&&v==='mage'){c.couleur='#6e3a3f';c.tete='couronne';c.mains='cadeau'}
+        if(C.etape===3) C.zoomTete=(k==='tete'&&v!=='rien');
         refaire('[data-k="'+k+'"][data-v="'+v+'"]');
       });
     });
