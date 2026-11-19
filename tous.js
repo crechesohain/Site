@@ -240,27 +240,51 @@
     var f=document.getElementById('fresque');
     if(!f) return;
     var taille=document.getElementById('tousTaille'), scene=document.getElementById('tousScene'), voir=document.getElementById('tousVoirTout');
-    var W=parseFloat(scene.style.width), z=1, MAX=3.2, zmin=Math.min(1,f.clientWidth/W);
-    // vue d'ensemble : toute la crèche tient dans la largeur de l'écran ; on pince ou on fait rouler la molette pour zoomer
-    f.style.height=Math.round(H*zmin)+'px';
-    function zoomer(n,cx,cy,anime){
-      n=Math.max(zmin,Math.min(MAX,n));
+    var W=parseFloat(scene.style.width), z=1, MAX=3.2, zmin=1, plein=null, cadre=f.parentNode;
+    var tactile=matchMedia('(hover:none)').matches;
+    // dans la page : toute la crèche tient dans la largeur ; en plein écran (téléphone) : elle remplit la hauteur
+    function cadrer(){
+      if(plein){ f.style.height=''; zmin=Math.min(1,f.clientWidth/W); var zh=f.clientHeight/H; zoomer(Math.max(zmin,zh),0,0,false,true); }
+      else { zmin=Math.min(1,cadre.clientWidth/W); f.style.height=Math.round(H*zmin)+'px'; zoomer(zmin,0,0,false,true); }
+      f.scrollLeft=(f.scrollWidth-f.clientWidth)/2; f.scrollTop=f.scrollHeight-f.clientHeight;
+    }
+    function zoomer(n,cx,cy,anime,libre){
+      n=libre?n:Math.max(zmin,Math.min(MAX,n));
       var px=(f.scrollLeft+cx)/z, py=(f.scrollTop+cy)/z;
       z=n;
       taille.style.width=(W*z)+'px'; taille.style.height=(H*z)+'px';
       scene.style.transform='scale('+z+')';
       f.scrollLeft=px*z-cx; f.scrollTop=py*z-cy;
-      f.classList.toggle('zoome',z>zmin+.01); voir.hidden=z<=zmin+.01;
+      f.classList.toggle('zoome',z>zmin+.01); voir.hidden=plein||z<=zmin+.01;
     }
     function viser(el,n){
       var x=parseFloat(el.style.left), y=parseFloat(el.style.top)-parseFloat(el.style.height)/2;
       zoomer(n,f.clientWidth/2,f.clientHeight/2);
       f.scrollLeft=x*z-f.clientWidth/2; f.scrollTop=y*z-f.clientHeight/2;
     }
-    // départ : centré sur l'étable, ou zoomé sur « mon » personnage
-    if(zmin<1) zoomer(zmin,0,0);
-    f.scrollLeft=(f.scrollWidth-f.clientWidth)/2;
-    voir.addEventListener('click',function(){ zoomer(zmin,f.clientWidth/2,f.clientHeight/2); f.scrollLeft=(f.scrollWidth-f.clientWidth)/2; });
+    cadrer();
+    voir.addEventListener('click',cadrer);
+    // téléphone : toucher la fresque l'ouvre en plein écran, comme les photos de section
+    function ouvrir(){
+      if(plein) return;
+      plein=document.createElement('div'); plein.className='plein tous-plein'; plein.setAttribute('role','dialog'); plein.setAttribute('aria-modal','true'); plein.setAttribute('aria-label','La crèche de tous en grand');
+      plein.innerHTML='<div class="plein-tete"><span>La crèche de tous</span><button type="button" class="plein-fermer">Fermer <span aria-hidden="true">✕</span></button></div><div class="tous-plein-corps"></div><p class="plein-aide" id="tousPleinAide">Glissez pour parcourir · pincez pour zoomer · touchez une étoile</p>';
+      document.body.appendChild(plein); document.documentElement.classList.add('plein-ouvert');
+      plein.querySelector('.tous-plein-corps').appendChild(f);
+      plein.querySelector('.plein-fermer').addEventListener('click',fermer);
+      cadrer(); plein.querySelector('.plein-fermer').focus({preventScroll:true});
+    }
+    function fermer(){
+      if(!plein) return;
+      cadre.insertBefore(f,cadre.firstChild); plein.remove(); plein=null; document.documentElement.classList.remove('plein-ouvert');
+      cadrer();
+    }
+    addEventListener('keydown',function(e){ if(e.key==='Escape') fermer() });
+    addEventListener('hashchange',fermer);
+    f.addEventListener('click',function(e){
+      if(plein||!tactile) return;
+      e.preventDefault(); e.stopPropagation(); ouvrir();
+    },true);
     // molette : vers le haut = zoom avant ; vers le bas = zoom arrière, puis la page défile normalement
     f.addEventListener('wheel',function(e){
       var dy=e.deltaMode===1?e.deltaY*16:e.deltaY;
@@ -284,6 +308,8 @@
         choixEtoile=+b.dataset.e; var e=donnees.etoiles[choixEtoile];
         f.querySelectorAll('.tous-etoile.choisie').forEach(function(x){x.classList.remove('choisie')}); b.classList.add('choisie');
         document.getElementById('intention').innerHTML='<small>Étoile allumée par '+esc(e.signature||'Anonyme')+'</small><p>«&nbsp;'+esc(e.texte)+'&nbsp;»</p>';
+        var aide=document.getElementById('tousPleinAide');
+        if(aide) aide.innerHTML='<i>«&nbsp;'+esc(e.texte)+'&nbsp;»</i> — '+esc(e.signature||'Anonyme');
       });
     });
   }
