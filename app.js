@@ -212,7 +212,9 @@ function majEtoile(y, max) {
     else fetch('/carte.svg',{cache:'no-cache'}).then(function(r){return r.text()}).then(function(t){svgCarte=t;poser(t)}).catch(function(){box.innerHTML='<p class="aide">Le plan n\'a pas pu être chargé.</p>'});
   }
 
+  var secCour=null;
   function section(s){
+    secCour=s;
     titre(s.titre);
     var h=retour('carte','Carte de l\'église');
     h+='<h1 class="titre-section">'+esc(s.titre)+'</h1><div class="sous-titre">'+esc(s.sousTitre||'Section')+'</div>';
@@ -228,7 +230,8 @@ function majEtoile(y, max) {
       }
     });
     h+='</div></div><div class="zoom"><button type="button" class="voir-tout" data-z="reset">Voir toute la photo</button></div>';
-    h+='<p class="aide">Touchez un rond pour ouvrir la fiche. Pincez la photo pour zoomer'+(matchMedia('(hover:hover)').matches?' (sur ordinateur : molette pour zoomer, puis faites glisser)':'')+'.</p>';
+    h+='<p class="agrandir-p"><button type="button" class="bouton agrandir" id="agrandir">Agrandir la photo</button></p>';
+    h+='<p class="aide">'+(matchMedia('(hover:hover)').matches?'Cliquez sur un point pour ouvrir la fiche. Molette pour zoomer, puis faites glisser.':'Touchez la photo pour l\'agrandir, puis touchez un numéro pour ouvrir la fiche.')+'</p>';
     return h+'<div class="liste grille">'+l+'</div>';
   }
 
@@ -324,6 +327,34 @@ function majEtoile(y, max) {
 
   /* ---------- visionneuse de section : zoom au pincement, glisser, double-clic ---------- */
   var V=null;
+  /* ---------- photo de section en plein écran (lecture facile au téléphone) ---------- */
+  function fermerPlein(){
+    var o=document.getElementById('plein'); if(!o) return;
+    o.remove(); document.documentElement.classList.remove('plein-ouvert');
+    var b=document.getElementById('agrandir'); if(b) b.focus({preventScroll:true});
+  }
+  function ouvrirPlein(fx){
+    var s=secCour; if(!s) return; fermerPlein();
+    var h='<div class="plein-tete"><span>'+esc(s.titre)+'</span><button type="button" class="plein-fermer" id="pleinFermer">Fermer <span aria-hidden="true">✕</span></button></div>';
+    h+='<div class="plein-defile" id="pleinDefile"><div class="plein-plan"><img src="/'+s.photo+'" alt="Vue d\'ensemble de la section '+esc(s.titre)+'">';
+    s.points.forEach(function(p,i){
+      var c=trouve(p.id), n=(c&&c.numero)?c.numero:(i+1);
+      if(c) h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'</a>';
+      else h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
+    });
+    h+='</div></div><p class="plein-aide">Faites glisser pour parcourir · touchez un numéro pour ouvrir la fiche</p>';
+    var o=document.createElement('div'); o.id='plein'; o.className='plein'; o.setAttribute('role','dialog'); o.setAttribute('aria-modal','true'); o.setAttribute('aria-label','Photo de la section en grand');
+    o.innerHTML=h; document.body.appendChild(o); document.documentElement.classList.add('plein-ouvert');
+    var d=document.getElementById('pleinDefile'), im=o.querySelector('img');
+    function centrer(){ d.scrollLeft=Math.max(0,(typeof fx==='number'?fx:0.5)*im.clientWidth-d.clientWidth/2); }
+    if(im.complete) centrer(); else im.addEventListener('load',centrer);
+    document.getElementById('pleinFermer').addEventListener('click',fermerPlein);
+    o.querySelectorAll('a.rond').forEach(function(a){a.addEventListener('click',function(){fermerPlein()})});
+    document.getElementById('pleinFermer').focus({preventScroll:true});
+  }
+  addEventListener('keydown',function(e){if(e.key==='Escape')fermerPlein()});
+  addEventListener('hashchange',fermerPlein);
+
   function visionneuse(){
     var visio=document.getElementById('visio'), plan=document.getElementById('plan'); V=null;
     if(!visio) return;
@@ -394,7 +425,8 @@ function majEtoile(y, max) {
       // double tap au doigt : zoom avant / retour
       if(e.pointerType==='touch'&&!bouge&&liste().length===1){
         var t=Date.now(), p=local(e);
-        if(t-dernierTap<300&&!(e.target.closest&&e.target.closest('.rond'))){ if(st.s>1.01){st.s=1;st.x=0;st.y=0;appliquer(true)} else zoomer(2.5,p.x,p.y,true); dernierTap=0 }
+        if(st.s<=1.01){ e.preventDefault(); ouvrirPlein(p.x/st.w); }
+        else if(t-dernierTap<300&&!(e.target.closest&&e.target.closest('.rond'))){ st.s=1;st.x=0;st.y=0;appliquer(true); dernierTap=0 }
         else dernierTap=t;
       }
       fin(e);
@@ -402,7 +434,9 @@ function majEtoile(y, max) {
     visio.addEventListener('pointercancel',fin);
     visio.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')fin(e)});
     // un glissement ne doit pas ouvrir la fiche sous le doigt
-    visio.addEventListener('click',function(e){if(bouge){e.preventDefault();e.stopPropagation();bouge=false}},true);
+    visio.addEventListener('click',function(e){if(bouge||(dernierType==='touch'&&st.s<=1.01)){e.preventDefault();e.stopPropagation();bouge=false}},true);
+    var dernierType='';visio.addEventListener('pointerdown',function(e){dernierType=e.pointerType},true);
+    var ag=document.getElementById('agrandir'); if(ag) ag.addEventListener('click',function(){ouvrirPlein(0.5)});
     visio.addEventListener('dblclick',function(e){
       if(e.target.closest&&e.target.closest('.rond')) return;
       var p=local(e); if(st.s>1.01){st.s=1;st.x=0;st.y=0;appliquer(true)} else zoomer(2.5,p.x,p.y,true);
