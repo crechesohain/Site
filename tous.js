@@ -240,7 +240,9 @@
     var f=document.getElementById('fresque');
     if(!f) return;
     var taille=document.getElementById('tousTaille'), scene=document.getElementById('tousScene'), voir=document.getElementById('tousVoirTout');
-    var W=parseFloat(scene.style.width), z=1, MAX=3.2, zmin=Math.min(1,f.clientHeight/H);
+    var W=parseFloat(scene.style.width), z=1, MAX=3.2, zmin=Math.min(1,f.clientWidth/W);
+    // vue d'ensemble : toute la crèche tient dans la largeur de l'écran ; on pince ou on fait rouler la molette pour zoomer
+    f.style.height=Math.round(H*zmin)+'px';
     function zoomer(n,cx,cy,anime){
       n=Math.max(zmin,Math.min(MAX,n));
       var px=(f.scrollLeft+cx)/z, py=(f.scrollTop+cy)/z;
