@@ -57,9 +57,9 @@
     if(!longue) s+=chemin('M35 160 h12 v32 h-12 Z M53 160 h12 v32 h-12 Z','fill:#3b2d20');
     var pied='M35 194 a7 4.5 0 1 0 14 0 a7 4.5 0 1 0 -14 0 M51 194 a7 4.5 0 1 0 14 0 a7 4.5 0 1 0 -14 0';
     if(c.chaussures==='sandales') s+=chemin(pied,'fill:'+c.teint)+chemin('M34 197.5 h16 v2.5 h-16 Z M50 197.5 h16 v2.5 h-16 Z','fill:#7a5c3e')+chemin('M36.5 192 L47.5 192 M42 189.5 L42 197 M52.5 192 L63.5 192 M58 189.5 L58 197','fill:none;stroke:#7a5c3e;stroke-width:1.8');
-    if(c.chaussures==='bottes') s+=chemin('M36 176 h11 v16 l3 7 h-17 q0 -5 3 -7 Z M53 176 h11 v16 q3 2 3 7 h-17 l3 -7 Z','fill:#2a2a2a')+chemin('M35.5 176 h12 v4 h-12 Z M52.5 176 h12 v4 h-12 Z','fill:#5a524a');
+    if(c.chaussures==='bottes') s+=chemin('M34 172 h14 v20 l3 7 h-20 q0 -5 3 -7 Z M52 172 h14 v20 q3 2 3 7 h-20 l3 -7 Z','fill:#2a2a2a')+chemin('M33.5 171 h15 v4.5 h-15 Z M51.5 171 h15 v4.5 h-15 Z','fill:#5a524a');
     if(c.chaussures==='babouches') s+=chemin('M45 191 Q38 189 32 193 Q28 195 26 191.5 Q27 199 36 199.5 L49 199.5 Q51 193 45 191 Z M55 191 Q62 189 68 193 Q72 195 74 191.5 Q73 199 64 199.5 L51 199.5 Q49 193 55 191 Z','fill:#8a3b2e')+chemin('M33 195 Q40 193 47 195 M67 195 Q60 193 53 195','fill:none;stroke:#c9a54c;stroke-width:1.2');
-    if(c.chaussures==='pieds') s+=chemin(pied,'fill:'+c.teint)+chemin(rond(36.5,195.5,1.4)+' '+rond(39.5,197.3,1.3)+' '+rond(63.5,195.5,1.4)+' '+rond(60.5,197.3,1.3),'fill:'+c.teint+';stroke:#000;stroke-opacity:.25;stroke-width:.6');
+    if(c.chaussures==='pieds') s+=chemin(pied,'fill:'+c.teint);
     // corps : robe longue (fille, ange, mage) ou tunique (garçon)
     var corps=longue?(large?'M29 74 Q50 68 71 74 L82 192 L18 192 Z':'M38 74 L62 74 L82 192 L18 192 Z'):'M28 74 Q50 68 72 74 L74 166 L26 166 Z';
     s+=chemin(corps,'fill:'+col);
@@ -153,15 +153,17 @@
   function largeurDispo(){ var p=document.querySelector('.page'); var w=p?p.clientWidth-38:innerWidth-38; return Math.max(1100,Math.floor(w)); }
   function places(n){
     /* emplacements au sol, du plus proche de l'étable au plus éloigné ; la scène s'élargit avec le nombre de personnages */
-    var rangs=[[0.81,48,74],[0.89,54,70],[0.97,60,66]];   // y (fraction), largeur du personnage, pas entre deux
+    // peu de monde : grands personnages ; beaucoup de monde : ils rapetissent pour tous tenir
+    var f=n<=12?1.7:(n<=30?1.45:(n<=60?1.2:1));
+    var rangs=[[0.81,48*f,74*f],[0.89,54*f,70*f],[0.97,60*f,66*f]];   // y (fraction), largeur du personnage, pas entre deux
     var W=largeurDispo(), liste;
     for(;;){
       liste=[]; var cx=W/2;
       rangs.forEach(function(r,i){
         for(var x=30+(i%2?r[2]/2:0);x<W-30;x+=r[2]){
           if(i===0&&x>cx-520&&x<cx+215) continue;   // devant les mages et l'étable : on laisse voir la scène
-          if(i===1&&x>cx-60&&x<cx+60) continue;     // l'axe de la mangeoire reste dégagé
-          liste.push({x:x,y:r[0],w:r[1],d:Math.abs(x-cx)+i*28});
+          if(i===1&&x>cx-60*f&&x<cx+60*f) continue;     // l'axe de la mangeoire reste dégagé
+          liste.push({x:x,y:r[0],w:Math.round(r[1]),d:Math.abs(x-cx)+i*28*f});
         }
       });
       if(liste.length>=n||W>40000) break;
@@ -196,7 +198,7 @@
     var P=donnees.perso, E=donnees.etoiles, pl=places(P.length), W=pl.W;
     var h=titreH+intro+boutons;
     h+='<div class="tous-cadre">';
-    h+='<div class="tous-fresque" id="fresque" tabindex="0" aria-label="Fresque de la crèche, faites glisser pour la parcourir"><div class="tous-scene" style="width:'+W+'px;height:'+H+'px">';
+    h+='<div class="tous-fresque" id="fresque" tabindex="0" aria-label="Fresque de la crèche : faites glisser pour la parcourir, pincez ou utilisez la molette pour zoomer"><div class="tous-taille" id="tousTaille" style="width:'+W+'px;height:'+H+'px"><div class="tous-scene" id="tousScene" style="width:'+W+'px;height:'+H+'px">';
     // ciel : une case par étoile, réparties au hasard (mais toujours au même endroit pour une même étoile)
     var cols=Math.floor(W/64), lignes=5, cases=[];
     for(var r=0;r<lignes;r++) for(var q=0;q<cols;q++) cases.push([q,r]);
@@ -216,7 +218,8 @@
       var nom=p.nom||'Un visiteur', hh=Math.round(s.w*200/140);
       h+='<button type="button" class="tous-perso'+(p.id===moi?' moi':'')+'" style="left:'+s.x+'px;top:'+(s.y*H)+'px;width:'+s.w+'px;height:'+hh+'px;z-index:'+Math.round(s.y*100)+'" aria-label="'+esc(nom)+'">'+personnage(p.config,s.w)+'<span class="tip">'+esc(nom)+'</span></button>';
     });
-    h+='</div></div></div>';
+    h+='</div></div></div><button type="button" class="tous-voir-tout" id="tousVoirTout" hidden>Voir toute la crèche</button></div>';
+    if(P.length) h+='<form class="tous-cherche" id="tousCherche" role="search"><label for="tousNomCherche">Retrouve un personnage</label><div><input id="tousNomCherche" type="search" placeholder="Son nom" autocomplete="off"><button type="submit" class="bouton">Chercher</button></div><p id="tousTrouve" aria-live="polite"></p></form>';
     var e=E[choixEtoile];
     h+='<div class="tous-intention" role="status" id="intention">'+(e?'<small>Étoile allumée par '+esc(e.signature||'Anonyme')+'</small><p>«&nbsp;'+esc(e.texte)+'&nbsp;»</p>':'<small>Touchez une étoile</small><p>Chaque étoile porte l\'intention d\'un visiteur.</p>')+'</div>';
     return h;
@@ -228,15 +231,55 @@
       if(/^#creche-de-tous/.test(location.hash)&&document.getElementById('fresque')&&Math.abs(largeurDispo()-largeurRendue)>40) window.TOUS_rendre();
     },250);
   });
+  /* glisser à la souris : un seul jeu d'écouteurs pour toute la page */
+  var glisse=null;
+  addEventListener('pointermove',function(e){ if(!glisse) return; var dx=e.clientX-glisse.x, dy=e.clientY-glisse.y; if(Math.abs(dx)+Math.abs(dy)>5) glisse.b=true; if(glisse.b){glisse.f.scrollLeft=glisse.sl-dx; glisse.f.scrollTop=glisse.st-dy;} });
+  addEventListener('pointerup',function(){ var g=glisse; setTimeout(function(){ if(glisse===g) glisse=null },0); });
+  function sansAccent(t){return String(t||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase().trim()}
   function brancherFresque(moi){
     largeurRendue=largeurDispo();
     var f=document.getElementById('fresque');
     if(!f) return;
-    // centre la fresque sur l'étable, ou sur « mon » personnage
+    var taille=document.getElementById('tousTaille'), scene=document.getElementById('tousScene'), voir=document.getElementById('tousVoirTout');
+    var W=parseFloat(scene.style.width), z=1, MAX=3.2, zmin=Math.min(1,f.clientHeight/H);
+    function zoomer(n,cx,cy,anime){
+      n=Math.max(zmin,Math.min(MAX,n));
+      var px=(f.scrollLeft+cx)/z, py=(f.scrollTop+cy)/z;
+      z=n;
+      taille.style.width=(W*z)+'px'; taille.style.height=(H*z)+'px';
+      scene.style.transform='scale('+z+')';
+      f.scrollLeft=px*z-cx; f.scrollTop=py*z-cy;
+      f.classList.toggle('zoome',z>zmin+.01); voir.hidden=z<=zmin+.01;
+    }
+    function viser(el,n){
+      var x=parseFloat(el.style.left), y=parseFloat(el.style.top)-parseFloat(el.style.height)/2;
+      zoomer(n,f.clientWidth/2,f.clientHeight/2);
+      f.scrollLeft=x*z-f.clientWidth/2; f.scrollTop=y*z-f.clientHeight/2;
+    }
+    // départ : centré sur l'étable, ou zoomé sur « mon » personnage
     var cible=f.querySelector('.tous-perso.moi');
-    var x=cible?(parseFloat(cible.style.left)-f.clientWidth/2):((f.scrollWidth-f.clientWidth)/2);
-    f.scrollLeft=x;
-    if(cible) cible.focus({preventScroll:true});
+    if(zmin<1) zoomer(zmin,0,0);
+    f.scrollLeft=(f.scrollWidth-f.clientWidth)/2;
+    if(cible){ viser(cible,2.2); cible.focus({preventScroll:true}); }
+    voir.addEventListener('click',function(){ zoomer(zmin,f.clientWidth/2,f.clientHeight/2); f.scrollLeft=(f.scrollWidth-f.clientWidth)/2; });
+    // molette : vers le haut = zoom avant ; vers le bas = zoom arrière, puis la page défile normalement
+    f.addEventListener('wheel',function(e){
+      var dy=e.deltaMode===1?e.deltaY*16:e.deltaY;
+      if(Math.abs(e.deltaX)>Math.abs(dy)&&!e.ctrlKey) return;     // défilement horizontal du pavé tactile
+      if(!e.ctrlKey&&dy>0&&z<=zmin+.01) return;
+      e.preventDefault(); var r=f.getBoundingClientRect();
+      zoomer(z*Math.exp(-Math.max(-120,Math.min(120,dy))*(e.ctrlKey?0.01:0.0025)),e.clientX-r.left,e.clientY-r.top);
+    },{passive:false});
+    // pincer à deux doigts
+    var pince=null;
+    f.addEventListener('touchstart',function(e){ if(e.touches.length===2){ var a=e.touches[0],b=e.touches[1], r=f.getBoundingClientRect(); pince={d:Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY),z:z,cx:(a.clientX+b.clientX)/2-r.left,cy:(a.clientY+b.clientY)/2-r.top}; } },{passive:true});
+    f.addEventListener('touchmove',function(e){ if(pince&&e.touches.length===2){ e.preventDefault(); var a=e.touches[0],b=e.touches[1]; zoomer(pince.z*Math.hypot(a.clientX-b.clientX,a.clientY-b.clientY)/pince.d,pince.cx,pince.cy); } },{passive:false});
+    f.addEventListener('touchend',function(e){ if(e.touches.length<2) pince=null; });
+    // double-clic / double-toucher sur le décor : zoom avant, ou retour à la vue d'ensemble
+    f.addEventListener('dblclick',function(e){ if(e.target.closest('.tous-perso,.tous-etoile')) return; var r=f.getBoundingClientRect(); zoomer(z>zmin*1.5?zmin:2.2,e.clientX-r.left,e.clientY-r.top); });
+    // glisser à la souris
+    f.addEventListener('pointerdown',function(e){ if(e.pointerType!=='mouse'||e.button!==0) return; glisse={f:f,x:e.clientX,y:e.clientY,sl:f.scrollLeft,st:f.scrollTop,b:false}; });
+    f.addEventListener('click',function(e){ if(glisse&&glisse.b){e.preventDefault();e.stopPropagation()} },true);
     f.querySelectorAll('.tous-etoile').forEach(function(b){
       b.addEventListener('click',function(){
         choixEtoile=+b.dataset.e; var e=donnees.etoiles[choixEtoile];
@@ -244,12 +287,25 @@
         document.getElementById('intention').innerHTML='<small>Étoile allumée par '+esc(e.signature||'Anonyme')+'</small><p>«&nbsp;'+esc(e.texte)+'&nbsp;»</p>';
       });
     });
-    // glisser la fresque à la souris
-    var g=null;
-    f.addEventListener('pointerdown',function(e){ if(e.pointerType!=='mouse') return; g={x:e.clientX,s:f.scrollLeft,b:false}; });
-    addEventListener('pointermove',function(e){ if(!g) return; var dx=e.clientX-g.x; if(Math.abs(dx)>5) g.b=true; if(g.b) f.scrollLeft=g.s-dx; });
-    addEventListener('pointerup',function(){ setTimeout(function(){g=null},0); });
-    f.addEventListener('click',function(e){ if(g&&g.b){e.preventDefault();e.stopPropagation()} },true);
+    // retrouver un personnage par son nom
+    var form=document.getElementById('tousCherche');
+    if(form){
+      var trouves=[], rang=-1, dernier='';
+      form.addEventListener('submit',function(e){
+        e.preventDefault();
+        var q=sansAccent(document.getElementById('tousNomCherche').value), sortie=document.getElementById('tousTrouve');
+        f.querySelectorAll('.tous-perso.trouve').forEach(function(x){x.classList.remove('trouve')});
+        if(!q){sortie.textContent='';return}
+        if(q!==dernier){
+          dernier=q; rang=-1;
+          trouves=[].slice.call(f.querySelectorAll('.tous-perso')).filter(function(b){return sansAccent(b.getAttribute('aria-label')).indexOf(q)>=0});
+        }
+        if(!trouves.length){sortie.textContent='Aucun personnage à ce nom pour l\'instant.';return}
+        rang=(rang+1)%trouves.length; var el=trouves[rang];
+        el.classList.add('trouve'); viser(el,2.4); el.focus({preventScroll:true});
+        sortie.textContent=trouves.length>1?('Personnage '+(rang+1)+' sur '+trouves.length+' · appuie encore sur « Chercher » pour voir le suivant.'):'Le voici !';
+      });
+    }
   }
 
   /* ---------- création d'un personnage ---------- */
