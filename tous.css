@@ -86,3 +86,5 @@ button.lien{background:none;border:0;color:var(--or-doux);text-decoration:underl
 /* onglets : jamais coupés, ils passent à la ligne au besoin */
 .tous-parties{flex-wrap:wrap;overflow:visible;justify-content:flex-start}
 .onglet{padding:0 10px}
+.tous-noel{position:absolute;left:50%;top:122px;transform:translateX(-50%);white-space:nowrap;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;color:var(--or-doux);text-shadow:0 0 12px rgba(15,26,46,.9);z-index:4;pointer-events:none}
+.tous-noel b{font-style:normal;font-weight:600;color:var(--ivoire);font-size:1.3rem}

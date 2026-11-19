@@ -123,6 +123,17 @@
     var d=new Date(), m=d.getMonth();
     return (m===11&&d.getDate()>=25)||m===0||m===1;
   }
+  /* compte à rebours de Noël, sous l'étoile de Bethléem */
+  function compteNoel(){
+    var d=new Date(), m=d.getMonth(), j=d.getDate(), t;
+    if(m===11&&j===25) t='Joyeux Noël&nbsp;!';
+    else if((m===11&&j>25)||m<=1) t='';
+    else {
+      var noel=new Date(d.getFullYear(),11,25), n=Math.ceil((noel-new Date(d.getFullYear(),m,j))/86400000);
+      t=n===1?'Noël, c\'est demain':'Noël dans <b>'+n+'</b> jours';
+    }
+    return t?'<div class="tous-noel">'+t+'</div>':'';
+  }
   var choixEtoile=-1;
   function fresque(moi){
     var titreH='<div class="hero"><h1>La crèche de tous</h1><div class="lieu">Crèche participative</div></div>';
@@ -141,11 +152,11 @@
     E.forEach(function(e,i){
       var k=cases[i%cases.length], tour=Math.floor(i/cases.length), hh=hash(e.id);
       var x=k[0]*64+12+(hh%40)+(tour*17)%30, y=34+k[1]*46+((hh>>8)%26)+(tour*11)%20;
-      if(Math.abs(x-W/2)<70&&y<150) y+=110;   // l'étoile de Bethléem garde sa place
+      if(Math.abs(x-W/2)<115&&y<165) y+=120;   // l'étoile de Bethléem et le compte à rebours gardent leur place
       var t=(hh>>4)%3===0?14:10;
       h+='<button type="button" class="tous-etoile'+(i===choixEtoile?' choisie':'')+'" data-e="'+i+'" style="left:'+x+'px;top:'+y+'px;--t:'+t+'px;--d:'+(2+(hh%28)/10)+'s" aria-label="Étoile de '+esc(e.signature||'Anonyme')+'"><span></span></button>';
     });
-    h+='<div class="tous-bethleem" aria-hidden="true"><i></i><b></b></div><div class="tous-sol" aria-hidden="true"></div>';
+    h+='<div class="tous-bethleem" aria-hidden="true"><i></i><b></b></div>'+compteNoel()+'<div class="tous-sol" aria-hidden="true"></div>';
     var D=window.TOUS_DECOR||{};
     h+=(D.mages||'')+(D.etable||'').replace('%JESUS%',jourDeNoel()?(D.jesus||''):'');
     P.forEach(function(p,i){
