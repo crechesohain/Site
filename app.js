@@ -8,18 +8,98 @@
     ciel.appendChild(e);
   }
   var astre=document.getElementById('astre'), ticking=false;
+
+
+var ETOILE = {
+  taille: 120,              // côté de #astre en px (cf. CSS)
+  course: 0.9,              // fraction d'écran de défilement pour finir l'arc (ordinateur)
+  courseTel: 0.55,          // idem sur téléphone : elle libère vite le texte
+  reduit: window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches
+};
+if (window.matchMedia) {
+  var mqEtoile = matchMedia('(prefers-reduced-motion: reduce)');
+  (mqEtoile.addEventListener ? mqEtoile.addEventListener('change', function (e) { ETOILE.reduit = e.matches; })
+                             : mqEtoile.addListener(function (e) { ETOILE.reduit = e.matches; }));
+}
+
+function majEtoile(y, max) {
+  var astre = document.getElementById('astre');
+  if (!astre) return;
+  var W = window.innerWidth, H = window.innerHeight;
+  var tel = W < 720;
+
+  /* Départ : centre, en haut (identique au rendu actuel : top 6vh) */
+  var x0 = W / 2, y0 = H * 0.06 + ETOILE.taille / 2;
+
+  /* Arrivée : marge droite, mesurée sur le conteneur .page */
+  var x1, y1, s1;
+  if (tel) {
+    x1 = W - 18;                              // coin haut droit : à moitié dans
+                                              // la gouttière de 18 px, à moitié
+                                              // derrière les cartes
+    y1 = 96;                                  // sous la barre du haut
+    s1 = 0.34;                                // ≈ 40 px
+  } else {
+    var page = document.querySelector('.page');
+    var r = page ? page.getBoundingClientRect() : { right: W * 0.7 };
+    var contenu = Math.min(r.right, W);       // bord droit du contenu
+    // .page a 18 px de padding : le texte s'arrête un peu avant r.right
+    var marge = W - contenu;
+    if (marge >= 100) {
+      x1 = contenu + marge / 2;               // centre de la marge
+      s1 = Math.max(0.42, Math.min(0.62, marge / 520));
+    } else {
+      x1 = W - 52;                            // marge étroite : contre le bord
+      s1 = 0.4;
+    }
+    y1 = Math.max(150, H * 0.22);
+  }
+
+  /* Progression : 0 → 1 sur ~un écran de défilement, adoucie.
+     Sur une page courte (accueil sur téléphone…), l'arc se termine
+     avant la fin du défilement possible : l'étoile ne reste jamais
+     « à mi-chemin » au-dessus du texte. */
+  var course = Math.min(H * (tel ? ETOILE.courseTel : ETOILE.course), Math.max(H * 0.2, max * 0.6));
+  var p = Math.min(1, Math.max(0, y / course));
+  if (ETOILE.reduit) p = y > 24 ? 1 : 0;
+  var e = p * p * (3 - 2 * p);                // smoothstep : départ et arrivée doux
+
+  /* Arc : courbe de Bézier quadratique ; le point de contrôle est
+     au-dessus de la ligne départ→arrivée, l'étoile monte puis se pose. */
+  var cx = x0 + (x1 - x0) * 0.6;
+  var cy = Math.min(y0, y1) - (tel ? 20 : 70);
+  var u = 1 - e;
+  var x = u * u * x0 + 2 * u * e * cx + e * e * x1;
+  var yy = u * u * y0 + 2 * u * e * cy + e * e * y1;
+
+  /* Fin de page : elle descend un peu vers les mages (derniers 15 %) */
+  var f = Math.min(1, Math.max(0, y / Math.max(1, max)));
+  var fin = ETOILE.reduit ? 0 : Math.max(0, (f - 0.85) / 0.15);
+  if (!tel) yy += fin * H * 0.12;
+
+  var s = 1 + (s1 - 1) * e;
+  var rot = e * 14 + fin * 6;                  // légère inclinaison : elle « file »
+
+  astre.style.transform =
+    'translate3d(' + (x - ETOILE.taille / 2).toFixed(1) + 'px,' +
+    (yy - ETOILE.taille / 2).toFixed(1) + 'px,0) scale(' + s.toFixed(3) +
+    ') rotate(' + rot.toFixed(1) + 'deg)';
+  /* sur téléphone, on l'atténue un peu une fois posée : décor, pas signal */
+  astre.style.opacity = (0.9 - (tel ? 0.2 : 0.05) * e).toFixed(2);
+  astre.classList.add('guidee');
+}
+
   function maj(){
     var y=window.scrollY||0, max=Math.max(1,document.documentElement.scrollHeight-innerHeight), f=Math.min(1,y/max);
-    astre.style.transform='translateY('+(-y*0.35)+'px) scale('+(1-f*0.45)+') rotate('+(f*20)+'deg)';
+    majEtoile(y, max);
     ciel.style.transform='translateY('+(-y*0.06)+'px)';
     ticking=false;
   }
   addEventListener('scroll',function(){if(!ticking){ticking=true;requestAnimationFrame(maj)}},{passive:true});
+  addEventListener('resize',function(){requestAnimationFrame(maj)});
 
-  /* ---------- menu ---------- */
-  var burger=document.getElementById('burger'), menu=document.getElementById('menu');
-  burger.addEventListener('click',function(){var o=menu.classList.toggle('ouvert');burger.setAttribute('aria-expanded',o)});
-  menu.addEventListener('click',function(){menu.classList.remove('ouvert');burger.setAttribute('aria-expanded',false)});
+  /* ---------- menu (haut sur ordinateur, onglets en bas sur téléphone) ---------- */
+  /* plus de bouton « burger » : le même menu est toujours visible */
 
   /* ---------- outils ---------- */
   var SEP='<div class="sep"><svg viewBox="0 0 10 10"><path fill="currentColor" d="M5 0L6 4L10 5L6 6L5 10L4 6L0 5L4 4Z"/></svg></div>';
@@ -37,12 +117,31 @@
     return 'Origine à préciser';
   }
   function vignette(c,num){
-    return '<a class="vignette" href="#'+c.id+'"><img src="/'+c.photo+'" alt="" loading="lazy">'+(num?'<i style="background:var(--or-doux)">'+num+'</i>':'')+'<div><b>'+esc(c.titre)+'</b><span>'+esc(c.pays)+'</span></div></a>';
+    return '<a class="vignette" href="#'+c.id+'"><img src="/mini/'+c.photo+'" alt="" width="92" height="92" decoding="async">'+(num?'<i>'+num+'</i>':'')+'<div><b>'+esc(c.titre)+'</b><span>'+esc(c.pays)+'</span></div></a>';
   }
   function carte(h){return '<article class="carte"><div class="contenu texte">'+h+'</div></article>'}
   function titre(t,sous){
     document.title=t+' · Crèches du monde';
     document.getElementById('numero').textContent=sous||'';
+  }
+
+  /* témoignage de la créatrice / du créateur de l'exposition (site.json → "temoignage"), masqué tant qu'il est vide */
+  function temoignage(){
+    var t=site.temoignage||{}, video=/\.(mp4|webm|m4v|mov)(\?|$)/i.test(t.video||'')?t.video:'';
+    var estVideo=(t.type==='video'||(!t.type&&video))&&video;
+    if(!t.texte&&!estVideo) return '';
+    var h='<figure class="temoignage carte">';
+    if(estVideo) h+='<video class="temoignage-video" src="'+esc(video)+'"'+(t.photo?' poster="'+esc(t.photo)+'"':'')+' controls playsinline preload="none"></video>';
+    else if(t.photo) h+='<img class="temoignage-photo" src="'+esc(t.photo)+'" alt="'+esc(t.auteur?'Portrait de '+t.auteur:'')+'" width="120" height="120">';
+    h+='<div class="contenu">';
+    if(t.texte) h+='<blockquote>«&nbsp;'+esc(t.texte)+'&nbsp;»</blockquote>';
+    if(t.auteur) h+='<figcaption>'+esc(t.auteur)+'</figcaption>';
+    return h+'</div></figure>';
+  }
+  /* bouton de retour : revient à la page précédente du site si c'est la bonne, sinon suit le lien */
+  var precedent=null, courant=null;
+  function retour(cible,libelle){
+    return '<a class="retour" href="#'+cible+'" data-retour="'+esc(cible)+'"><span aria-hidden="true">←</span> '+esc(libelle)+'</a>';
   }
 
   /* ---------- pages ---------- */
@@ -54,16 +153,11 @@
     if(site.dates) h+='<div class="dates">'+esc(site.dates)+(site.horaires?' · '+esc(site.horaires):'')+'</div>';
     h+='</div>';
     h+='<p class="intro">Plus de trois cents crèches venues des quatre coins du monde racontent la naissance de Jésus avec les couleurs, les matières et les visages de chaque peuple. Scannez le QR code de chaque section, puis touchez une crèche pour découvrir son histoire.</p>';
-    h+='<div class="tuiles">';
-    h+='<a class="tuile" href="#creches"><b>Les crèches</b><span>Toutes les fiches, par pays et par continent</span></a>';
-    h+='<a class="tuile'+(sections.length?'':' bientot')+'" href="#carte"><b>La carte</b><span>Les sections de l\'église</span></a>';
-    h+='<a class="tuile" href="#don"><b>Faire un don</b><span>Soutenir l\'église Saint-Étienne</span></a>';
-    h+='<a class="tuile" href="#contact"><b>Nous écrire</b><span>Une question, une crèche à proposer</span></a>';
-    h+='</div>';
+    h+=temoignage();
     if(sections.length){
       h+='<div class="titre-bloc">Les sections</div><div class="liste">';
       sections.forEach(function(s){
-        h+='<a class="vignette" href="#'+s.id+'"><img src="/'+s.photo+'" alt="" loading="lazy"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>';
+        h+='<a class="vignette" href="#'+s.id+'"><img src="/mini/'+s.photo+'" alt="" width="92" height="92" decoding="async"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>';
       });
       h+='</div>';
     }
@@ -81,7 +175,9 @@
     conts.forEach(function(k){h+='<button type="button" data-f="'+esc(k)+'"'+(filtre===k?' class="actif"':'')+'>'+esc(k)+'</button>'});
     h+='</div><div class="liste grille">';
     creches.forEach(function(c){ if(!filtre||continent(c)===filtre) h+=vignette(c) });
-    return h+'</div>';
+    h+='</div>';
+    if(!creches.length) h+=carte('<p>Les fiches des crèches n\'ont pas pu être chargées. Vérifiez votre connexion puis rechargez la page.</p>');
+    return h;
   }
 
   function carteEglise(){
@@ -90,23 +186,24 @@
     if(!sections.length) return h+carte('<p>Le plan de l\'église et de ses sections sera publié dès l\'installation de l\'exposition.</p>');
     h+='<div class="liste grille">';
     sections.forEach(function(s){
-      h+='<a class="vignette" href="#'+s.id+'"><img src="/'+s.photo+'" alt="" loading="lazy"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>';
+      h+='<a class="vignette" href="#'+s.id+'"><img src="/mini/'+s.photo+'" alt="" width="92" height="92" decoding="async"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>';
     });
     return h+'</div><p class="aide" style="margin-top:16px">Le plan détaillé de l\'église arrive bientôt.</p>';
   }
 
   function section(s){
     titre(s.titre);
-    var h='<h1 class="titre-section">'+esc(s.titre)+'</h1><div class="sous-titre">'+esc(s.sousTitre||'Section')+'</div>';
+    var h=retour(precedent==='creches'?'creches':'carte', precedent==='creches'?'Toutes les crèches':'Toutes les sections');
+    h+='<h1 class="titre-section">'+esc(s.titre)+'</h1><div class="sous-titre">'+esc(s.sousTitre||'Section')+'</div>';
     h+='<div class="visionneuse" id="visio"><div class="plan" id="plan"><img src="/'+s.photo+'" alt="Vue d\'ensemble de la section '+esc(s.titre)+'">';
     var l='';
     s.points.forEach(function(p,i){
       var c=trouve(p.id), n=(c&&c.numero)?c.numero:(i+1);
       if(c){
-        h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+esc(c.titre)+'">'+n+'<span class="bulle">'+esc(c.titre)+'<small>'+esc(String(c.pays).split(' · ')[0])+'</small></span></a>';
+        h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'<span class="bulle" aria-hidden="true">'+esc(c.titre)+'<small>'+esc(String(c.pays).split(' · ')[0])+'</small></span></a>';
         l+=vignette(c,n);
       } else {
-        h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" title="Fiche en préparation">'+n+'</span>';
+        h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" title="Fiche en préparation" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
       }
     });
     h+='</div></div><div class="zoom"><button type="button" data-z="-1" aria-label="Dézoomer">−</button><button type="button" data-z="1" aria-label="Zoomer">+</button></div>';
@@ -116,7 +213,10 @@
 
   function fiche(c){
     titre(c.titre, c.numero?('Crèche n° '+c.numero):'');
-    var h='<article class="carte"><img class="photo" src="/'+c.photo+'" alt="'+esc(c.alt)+'"><div class="contenu">';
+    var sp=sectionDe(c.id), h;
+    if(sp&&precedent===sp.id) h=retour(sp.id,'Retour à la section');
+    else h=retour('creches','Toutes les crèches');
+    h+='<article class="carte"><img class="photo" src="/'+c.photo+'" alt="'+esc(c.alt)+'" width="1200" height="1260"><div class="contenu">';
     h+='<h1>'+esc(c.titre)+'</h1><div class="pays">'+esc(c.pays)+'</div>'+SEP+'<dl class="infos">';
     c.infos.forEach(function(i){h+='<div><dt>'+esc(i[0])+'</dt><dd>'+esc(i[1])+'</dd></div>'});
     h+='</dl>'+SEP;
@@ -182,6 +282,13 @@
     return carte(h);
   }
 
+  function introuvable(id){
+    var estFiche=/^C-/i.test(id);
+    titre(estFiche?'Fiche en préparation':'Page introuvable');
+    var h=retour('creches','Toutes les crèches');
+    return h+carte('<h1>'+(estFiche?'Fiche en préparation':'Page introuvable')+'</h1><p>'+(estFiche?'La fiche de cette crèche ('+esc(id)+') n\'est pas encore publiée. Revenez bientôt&nbsp;!':'Cette page n\'existe pas ou plus.')+'</p><p><a class="bouton" href="#creches">Voir toutes les crèches</a></p>');
+  }
+
   /* ---------- zoom de la visionneuse ---------- */
   var zoom=1, base=0;
   function taille(){
@@ -205,6 +312,12 @@
         });
       });
     }
+    document.querySelectorAll('[data-retour]').forEach(function(a){
+      a.addEventListener('click',function(e){
+        if(precedent===a.dataset.retour||(precedent===''&&a.dataset.retour==='')){e.preventDefault();history.back()}
+      });
+    });
+    fondu();
     document.querySelectorAll('.filtres button').forEach(function(b){
       b.addEventListener('click',function(){filtre=b.dataset.f;rendre(false)});
     });
@@ -215,21 +328,59 @@
     });
   }
 
+  /* ---------- galerie : les vignettes apparaissent toutes ensemble ---------- */
+  var prechargees=[];
+  function precharger(){
+    creches.forEach(function(c){var i=new Image();i.decoding='async';i.src='/mini/'+c.photo;prechargees.push(i)});
+    sections.forEach(function(s){var i=new Image();i.src='/mini/'+s.photo;prechargees.push(i)});
+  }
+  function fondu(){
+    document.querySelectorAll('.liste').forEach(function(l){
+      var imgs=[].slice.call(l.querySelectorAll('img'));
+      if(!imgs.length||imgs.every(function(i){return i.complete})) return;
+      l.classList.add('attente');
+      var fini=false;
+      function montrer(){if(!fini){fini=true;l.classList.remove('attente')}}
+      Promise.all(imgs.map(function(i){return i.complete?0:new Promise(function(ok){i.addEventListener('load',ok);i.addEventListener('error',ok)})})).then(montrer);
+      setTimeout(montrer,2500); /* filet de sécurité si le réseau est lent */
+    });
+  }
+
   /* ---------- routeur ---------- */
   var pages={'creches':liste,'carte':carteEglise,'don':don,'contact':contact,'a-propos':aPropos,'mentions-legales':mentions};
   function rendre(remonter){
     var id=location.hash.replace('#',''), c=trouve(id), s=sections.filter(function(x){return x.id===id})[0];
     document.getElementById('expo').style.visibility='';
     document.querySelector('.page').classList.toggle('large',!!s||id==='creches'||id==='carte');
-    document.getElementById('vue').innerHTML=c?fiche(c):(s?section(s):(pages[id]?pages[id]():accueil()));
-    document.querySelectorAll('#menu a').forEach(function(a){a.classList.toggle('actif',a.getAttribute('href')==='/#'+id||(id===''&&a.getAttribute('href')==='/#'))});
+    var vue=document.getElementById('vue');
+    if(remonter!==false){precedent=courant;courant=id}
+    vue.innerHTML=c?fiche(c):(s?section(s):(pages[id]?pages[id]():(/^(C-|s-)/i.test(id)?introuvable(id):accueil())));
+    /* onglet actif : la fiche appartient aux « crèches », une section à la « carte » */
+    var rub=c?'creches':(s?'carte':id);
+    document.querySelectorAll('#menu a').forEach(function(a){
+      var on=a.getAttribute('href')==='/#'+rub||(rub===''&&a.getAttribute('href')==='/#');
+      a.classList.toggle('actif',on);
+      if(on) a.setAttribute('aria-current','page'); else a.removeAttribute('aria-current');
+    });
     brancher();
-    if(remonter!==false) window.scrollTo(0,0);
+    if(remonter!==false){
+      var y=history.state&&typeof history.state.y==='number'?history.state.y:0;
+      window.scrollTo(0,y);
+      if(y) requestAnimationFrame(function(){window.scrollTo(0,y)});
+      if(premier) premier=false; else vue.focus({preventScroll:true});
+    }
     maj();
   }
+  var premier=true;
+  /* mémorise la position de défilement de chaque page pour la retrouver au retour */
+  var memo;
+  function memoriser(){try{history.replaceState({y:window.scrollY},'')}catch(e){}}
+  addEventListener('scroll',function(){clearTimeout(memo);memo=setTimeout(memoriser,200)},{passive:true});
+  document.addEventListener('click',function(e){if(e.target.closest&&e.target.closest('a[href^="#"],a[href^="/#"]'))memoriser()},true);
   function json(u,def){return fetch(u,{cache:'no-cache'}).then(function(r){return r.ok?r.json():def}).catch(function(){return def})}
   Promise.all([json('/creches.json',[]),json('/sections.json',[]),json('/site.json',{})]).then(function(d){
     creches=d[0];sections=d[1];site=d[2];rendre();
+    (window.requestIdleCallback||setTimeout)(precharger);
   });
   addEventListener('hashchange',function(){rendre()});
 })();

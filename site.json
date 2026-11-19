@@ -12,5 +12,12 @@
     "iban": "",
     "bic": "",
     "communication": "Don – exposition des crèches"
+  },
+  "temoignage": {
+    "type": "",
+    "photo": "",
+    "video": "",
+    "texte": "",
+    "auteur": ""
   }
 }

@@ -8,6 +8,8 @@
   :root{
     --nuit:#0f1a2e; --nuit2:#16243d; --or:#c9a54c; --or-doux:#e3cf96;
     --ivoire:#f6f1e6; --encre:#2a2a2a; --gris:#6b6458;
+    --or-encre:#7d6220; /* même or, assombri : petits textes dorés sur ivoire (contraste 5:1) */
+    --onglets:64px;
   }
   *{box-sizing:border-box;margin:0;padding:0}
   html{background:var(--nuit)}
@@ -28,10 +30,11 @@
   .astre svg{position:relative;width:100%;height:100%;filter:drop-shadow(0 0 14px rgba(227,207,150,.7))}
   @media (prefers-reduced-motion:reduce){.ciel i{animation:none;opacity:.6}}
   .page{position:relative;z-index:1;max-width:560px;margin:0 auto;padding:36px 18px 48px}
+  .espace-astre{height:130px}
 
   header{text-align:center;color:var(--or-doux);margin-bottom:26px}
   .etoile{width:54px;height:54px;margin:0 auto 14px;display:block;filter:drop-shadow(0 0 10px rgba(227,207,150,.6))}
-  .expo{font-size:.72rem;letter-spacing:.32em;text-transform:uppercase;opacity:.85}
+  .expo{font-size:.78rem;letter-spacing:.32em;text-transform:uppercase;opacity:.85}
   .numero{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.05rem;margin-top:6px;color:var(--or)}
 
   .carte{
@@ -49,12 +52,12 @@
   .sep::before,.sep::after{content:"";flex:1;height:1px;background:linear-gradient(90deg,transparent,var(--or),transparent)}
   .sep svg{width:14px;height:14px}
 
-  .infos{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;font-size:.9rem}
-  .infos dt{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--or);font-weight:400;margin-bottom:3px}
+  .infos{display:grid;grid-template-columns:1fr 1fr;gap:14px 18px;font-size:1rem}
+  .infos dt{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--or-encre);font-weight:400;margin-bottom:3px}
   .infos dd{color:var(--encre);line-height:1.4}
 
   h2{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.35rem;color:var(--nuit);margin-bottom:8px}
-  p{line-height:1.65;font-size:.98rem}
+  p{line-height:1.65;font-size:1.0625rem}
   p + p{margin-top:10px}
   section{margin-top:4px}
 
@@ -67,82 +70,322 @@
     margin-top:24px;text-align:center;font-family:'Cormorant Garamond',serif;font-style:italic;
     font-size:1.2rem;line-height:1.45;color:var(--nuit);
   }
-  blockquote cite{display:block;margin-top:6px;font-style:normal;font-family:'Lato',sans-serif;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)}
+  blockquote cite{display:block;margin-top:6px;font-style:normal;font-family:'Lato',sans-serif;font-size:.78rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)}
 
-  footer{text-align:center;color:var(--or-doux);opacity:.8;margin-top:28px;font-size:.75rem;letter-spacing:.15em;line-height:1.8}
+  footer{text-align:center;color:var(--or-doux);opacity:.9;margin-top:28px;font-size:.875rem;letter-spacing:.1em;line-height:1.8}
   footer .croix{width:18px;height:26px;display:block;margin:0 auto 10px;color:var(--or)}
   footer .eglise{font-family:'Cormorant Garamond',serif;font-size:1.15rem;letter-spacing:.04em;color:var(--or-doux);display:block}
   .liste{display:grid;gap:14px}
   .vignette{display:flex;gap:14px;align-items:center;background:var(--ivoire);border-radius:4px;overflow:hidden;text-decoration:none;color:var(--encre);border-left:3px solid var(--or);box-shadow:0 10px 30px rgba(0,0,0,.35)}
-  .vignette img{width:92px;height:92px;object-fit:cover;flex:none}
-  .vignette b{display:block;font-family:'Cormorant Garamond',serif;font-size:1.25rem;font-weight:600;color:var(--nuit);line-height:1.15}
-  .vignette span{font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;color:var(--gris)}
+  .vignette img{width:92px;height:92px;aspect-ratio:1;object-fit:cover;flex:none;background:var(--nuit2)}
+  /* galerie : fondu d'ensemble quand toutes les vignettes sont prêtes */
+  .liste{transition:opacity .45s ease}
+  .liste.attente{opacity:0}
+  .vignette b{display:block;font-family:'Cormorant Garamond',serif;font-size:1.3rem;font-weight:600;color:var(--nuit);line-height:1.15}
+  .vignette div{padding:8px 10px 8px 0}
+  .vignette span{font-size:.78rem;letter-spacing:.16em;text-transform:uppercase;color:var(--gris)}
   .intro{color:var(--or-doux);text-align:center;font-family:'Cormorant Garamond',serif;font-size:1.2rem;line-height:1.5;margin:0 6px 24px}
-  .retour{display:block;text-align:center;margin-top:22px;color:var(--or-doux);font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;text-decoration:none;opacity:.85}
+  /* bouton de retour bien visible, en haut de la carte */
+  .retour{display:inline-flex;align-items:center;gap:10px;min-height:48px;margin:0 0 14px;padding:10px 20px 10px 16px;border:1.5px solid var(--or);border-radius:24px;background:rgba(15,26,46,.75);color:var(--ivoire);font:400 1rem 'Lato',sans-serif;letter-spacing:.02em;text-decoration:none}
+  .retour span{color:var(--or-doux);font-size:1.25rem;line-height:1}
+  .retour:hover{background:var(--or);color:var(--nuit)}
+  .retour:hover span{color:var(--nuit)}
   .page.large{max-width:1080px}
   .titre-section{text-align:center;color:var(--ivoire);font-family:'Cormorant Garamond',serif;font-weight:600;font-size:2rem;line-height:1.1}
-  .sous-titre{text-align:center;color:var(--or);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;margin:8px 0 18px}
-  .visionneuse{position:relative;border-radius:4px;overflow:auto;-webkit-overflow-scrolling:touch;border-top:3px solid var(--or);box-shadow:0 20px 50px rgba(0,0,0,.45);background:#0b1322;max-height:78vh;touch-action:pan-x pan-y}
+  .sous-titre{text-align:center;color:var(--or);font-size:.8rem;letter-spacing:.28em;text-transform:uppercase;margin:8px 0 18px}
+  .visionneuse{position:relative;border-radius:4px;overflow:auto;-webkit-overflow-scrolling:touch;border-top:3px solid var(--or);box-shadow:0 20px 50px rgba(0,0,0,.45);background:#0b1322;max-height:78vh;touch-action:manipulation;overscroll-behavior:contain}
   .plan{position:relative;width:100%;margin:0 auto;transition:width .25s ease}
   .plan img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
-  .rond{position:absolute;transform:translate(-50%,-50%);width:36px;height:36px;border-radius:50%;background:rgba(15,26,46,.88);border:2px solid var(--or-doux);color:var(--or-doux);font:600 15px/32px 'Lato',sans-serif;text-align:center;text-decoration:none;box-shadow:0 0 0 0 rgba(227,207,150,.6);animation:halo 2.6s ease-out infinite}
-  .rond:hover,.rond:focus{background:var(--or);color:var(--nuit);outline:none;animation:none}
+  .rond{position:absolute;transform:translate(-50%,-50%);width:38px;height:38px;border-radius:50%;background:rgba(15,26,46,.88);border:2px solid var(--or-doux);color:var(--or-doux);font:600 16px/34px 'Lato',sans-serif;text-align:center;text-decoration:none;box-shadow:0 0 0 0 rgba(227,207,150,.6);animation:halo 2.6s ease-out infinite}
+  .rond::after{content:"";position:absolute;inset:-6px;border-radius:50%} /* zone tactile de 50 px */
+  .rond:hover,.rond:focus-visible{background:var(--or);color:var(--nuit);animation:none}
   .rond.attente{border-style:dashed;opacity:.75;animation:none}
   @keyframes halo{0%{box-shadow:0 0 0 0 rgba(227,207,150,.55)}70%{box-shadow:0 0 0 14px rgba(227,207,150,0)}100%{box-shadow:0 0 0 0 rgba(227,207,150,0)}}
   .bulle{position:absolute;left:50%;bottom:calc(100% + 10px);transform:translateX(-50%);white-space:nowrap;background:var(--ivoire);color:var(--nuit);font:600 .95rem 'Cormorant Garamond',serif;padding:5px 10px;border-radius:3px;box-shadow:0 6px 18px rgba(0,0,0,.4);opacity:0;pointer-events:none;transition:opacity .15s}
   .bulle small{display:block;font:400 .65rem 'Lato',sans-serif;letter-spacing:.15em;text-transform:uppercase;color:var(--gris)}
   @media (hover:hover){.rond:hover .bulle{opacity:1}}
+  .rond:focus-visible .bulle{opacity:1}
+  @media (prefers-reduced-motion:reduce){.rond{animation:none}.liste,.plan{transition:none}}
   .zoom{display:flex;justify-content:center;gap:10px;margin:12px 0 4px}
-  .zoom button{width:42px;height:42px;border-radius:50%;border:1px solid var(--or);background:transparent;color:var(--or-doux);font-size:1.3rem;cursor:pointer}
-  .aide{text-align:center;color:var(--or-doux);opacity:.8;font-size:.82rem;margin:6px 0 22px}
+  .zoom button{width:48px;height:48px;border-radius:50%;border:1px solid var(--or);background:transparent;color:var(--or-doux);font-size:1.3rem;cursor:pointer}
+  .aide{text-align:center;color:var(--or-doux);opacity:.9;font-size:1rem;margin:6px 0 22px}
   .liste.grille{grid-template-columns:repeat(auto-fill,minmax(260px,1fr))}
-  .vignette i{font-style:normal;flex:none;width:30px;height:30px;margin-left:-4px;border-radius:50%;border:1.5px solid var(--or);color:var(--nuit);font:600 13px/27px 'Lato',sans-serif;text-align:center}
-  .titre-bloc{color:var(--or);font-size:.72rem;letter-spacing:.28em;text-transform:uppercase;text-align:center;margin:26px 0 12px}
-  .lien-section{display:block;text-align:center;margin-top:18px;font-size:.78rem;letter-spacing:.18em;text-transform:uppercase;color:var(--nuit);text-decoration:none;border:1px solid var(--or);padding:10px;border-radius:3px}
+  .vignette i{font-style:normal;flex:none;width:32px;height:32px;margin-left:-4px;border-radius:50%;border:1.5px solid var(--or);background:var(--or-doux);color:var(--nuit);font:600 15px/29px 'Lato',sans-serif;text-align:center}
+  .titre-bloc{color:var(--or);font-size:.8rem;letter-spacing:.28em;text-transform:uppercase;text-align:center;margin:26px 0 12px}
+  .lien-section{display:block;text-align:center;margin-top:18px;font-size:.85rem;letter-spacing:.14em;text-transform:uppercase;color:var(--nuit);text-decoration:none;border:1px solid var(--or);padding:13px 10px;border-radius:3px}
 
-/* --- navigation --- */
-.barre{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;align-items:center;justify-content:space-between;padding:10px 16px;background:linear-gradient(180deg,rgba(15,26,46,.92),rgba(15,26,46,0));}
-.barre .marque{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.15rem;color:var(--or-doux);text-decoration:none;letter-spacing:.02em}
-.barre nav{display:flex;gap:18px}
-.barre nav a{color:var(--or-doux);text-decoration:none;font-size:.72rem;letter-spacing:.18em;text-transform:uppercase;opacity:.85}
+/* --- navigation : menu centré en haut (ordinateur), barre d'onglets fixe en bas (téléphone) --- */
+.barre{position:fixed;top:0;left:0;right:0;z-index:5;display:flex;justify-content:center;padding:8px 16px;background:linear-gradient(180deg,rgba(15,26,46,.92),rgba(15,26,46,0))}
+.barre nav{display:flex;gap:8px}
+.barre nav a{display:flex;align-items:center;min-height:44px;padding:0 12px;color:var(--or-doux);text-decoration:none;font-size:.8rem;letter-spacing:.18em;text-transform:uppercase;opacity:.9;border-bottom:1px solid transparent}
 .barre nav a:hover,.barre nav a.actif{opacity:1;color:var(--ivoire)}
-.burger{display:none;background:none;border:0;color:var(--or-doux);font-size:1.5rem;cursor:pointer;padding:4px 8px}
+.barre nav a.actif{border-bottom-color:var(--or)}
+.barre nav svg{display:none}
+.barre .court{display:none}
 @media (max-width:720px){
-  .burger{display:block}
-  .barre nav{display:none;position:absolute;top:100%;right:12px;flex-direction:column;gap:0;background:var(--ivoire);border-radius:4px;box-shadow:0 12px 30px rgba(0,0,0,.45);min-width:200px;overflow:hidden}
-  .barre nav.ouvert{display:flex}
-  .barre nav a,.barre nav a.actif{color:var(--nuit);padding:13px 18px;border-bottom:1px solid #e6dcc6;opacity:1}
-  .barre nav a.actif{font-weight:700}
+  body{padding-bottom:calc(var(--onglets) + env(safe-area-inset-bottom))}
+  .barre{top:auto;bottom:0;padding:0 0 env(safe-area-inset-bottom);background:rgba(11,19,34,.97);border-top:1px solid rgba(201,165,76,.55);box-shadow:0 -8px 24px rgba(0,0,0,.35)}
+  .barre nav{width:100%;max-width:560px;gap:0}
+  .barre nav a{flex:1 1 0;flex-direction:column;justify-content:center;gap:4px;min-height:var(--onglets);padding:6px 2px;font-size:.8125rem;letter-spacing:.01em;text-transform:none;text-align:center;line-height:1.1;border-bottom:0;border-top:2px solid transparent;margin-top:-1px}
+  .barre nav a.actif{border-top-color:var(--or);color:var(--ivoire);font-weight:400}
+  .barre nav svg{display:block;width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linejoin:round}
+  .barre nav a:first-child svg{fill:currentColor;stroke:none}
+  .barre .long{display:none}
+  .barre .court{display:inline}
+  .page{padding-top:20px}
+  .espace-astre{height:120px}
 }
 /* --- accueil --- */
 .hero{text-align:center;color:var(--ivoire);margin-bottom:28px}
 .hero h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:2.6rem;line-height:1.05;color:var(--ivoire)}
 .hero .lieu{margin-top:10px;color:var(--or);font-size:.75rem;letter-spacing:.28em;text-transform:uppercase}
 .hero .dates{margin-top:8px;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.15rem;color:var(--or-doux)}
-.tuiles{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:8px 0 6px}
-.tuile{display:block;background:var(--ivoire);border-radius:4px;border-top:3px solid var(--or);padding:18px 16px;text-decoration:none;color:var(--nuit);box-shadow:0 10px 30px rgba(0,0,0,.35)}
-.tuile b{display:block;font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.3rem;line-height:1.1}
-.tuile span{display:block;margin-top:6px;font-size:.8rem;color:var(--gris);line-height:1.4}
-.tuile.bientot{opacity:.65}
+.temoignage{margin:4px 0 8px;display:flex;flex-direction:column;align-items:center;text-align:center}
+.temoignage-photo{width:120px;height:120px;border-radius:50%;object-fit:cover;margin:26px auto 0;border:2px solid var(--or)}
+.temoignage-video{display:block;width:100%;aspect-ratio:16/9;background:#0b1322}
+.temoignage .contenu{padding:20px 24px 26px}
+.temoignage blockquote{margin-top:0}
+.temoignage figcaption{margin-top:12px;font-size:.8rem;letter-spacing:.2em;text-transform:uppercase;color:var(--gris)}
 /* --- pages de texte --- */
 .texte h1{margin-bottom:6px}
 .texte h2{margin-top:22px}
 .texte ul{margin:8px 0 0 18px;line-height:1.65}
 .texte a{color:var(--nuit)}
 .encadre-don{margin-top:18px;background:#efe6d1;border-left:3px solid var(--or);padding:16px 18px;border-radius:2px}
-.encadre-don dt{font-size:.68rem;letter-spacing:.2em;text-transform:uppercase;color:var(--or)}
+.encadre-don dt{font-size:.75rem;letter-spacing:.2em;text-transform:uppercase;color:var(--or-encre)}
 .encadre-don dd{font-size:1.05rem;margin:2px 0 12px;font-weight:400;word-break:break-word}
-.bouton{display:inline-block;margin-top:6px;padding:11px 18px;border-radius:3px;border:1px solid var(--or);background:var(--nuit);color:var(--or-doux);font:400 .78rem 'Lato',sans-serif;letter-spacing:.16em;text-transform:uppercase;text-decoration:none;cursor:pointer}
+.bouton{display:inline-block;margin-top:6px;min-height:44px;padding:13px 18px;border-radius:3px;border:1px solid var(--or);background:var(--nuit);color:var(--or-doux);font:400 .85rem 'Lato',sans-serif;letter-spacing:.14em;text-transform:uppercase;text-decoration:none;cursor:pointer}
+.texte a.bouton{color:var(--or-doux)}
 .bouton.clair{background:transparent;color:var(--nuit)}
-.note{font-size:.85rem;color:var(--gris);margin-top:12px}
+.note{font-size:1rem;color:var(--gris);margin-top:12px}
 /* --- liste --- */
 .filtres{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:0 0 18px}
-.filtres button{border:1px solid var(--or);background:transparent;color:var(--or-doux);border-radius:20px;padding:7px 14px;font:400 .72rem 'Lato',sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
+.filtres button{min-height:44px;border:1px solid var(--or);background:transparent;color:var(--or-doux);border-radius:22px;padding:8px 16px;font:400 .82rem 'Lato',sans-serif;letter-spacing:.14em;text-transform:uppercase;cursor:pointer}
 .filtres button.actif{background:var(--or);color:var(--nuit)}
-.lien-info{display:block;text-align:center;margin-top:10px;font-size:.82rem;color:var(--gris)}
+.lien-info{display:block;text-align:center;margin-top:10px;font-size:1rem;color:var(--gris)}
 .lien-info a{color:var(--nuit)}
-footer nav{margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;gap:6px 16px}
-footer nav a{color:var(--or-doux);text-decoration:none;font-size:.7rem;letter-spacing:.14em;text-transform:uppercase;opacity:.8}
+footer nav{margin-top:12px;display:flex;flex-wrap:wrap;justify-content:center;gap:0 6px}
+footer nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;color:var(--or-doux);text-decoration:none;font-size:.8rem;letter-spacing:.14em;text-transform:uppercase;opacity:.9}
 /* visionneuse : pas de barre de défilement visible */
 .visionneuse{scrollbar-width:none}
 .visionneuse::-webkit-scrollbar{display:none}
+/* --- accessibilité : focus clavier visible partout --- */
+a:focus-visible,button:focus-visible,video:focus-visible{outline:2px solid var(--or-doux);outline-offset:3px}
+.carte a:focus-visible,.carte button:focus-visible{outline-color:var(--nuit)}
+#vue:focus{outline:none}
+/* Rois mages (illustration gérée à part) */
+
+/* ===== Pièces visuelles : étoile qui guide + Rois mages ===== */
+/* =====================================================================
+   Crèches du monde · Ohain — pièces visuelles « étoile » et « mages »
+   À coller À LA FIN de style.css (après les règles existantes).
+   Fichier image à déposer à la racine du site : /magi.svg
+   ===================================================================== */
+
+/* ---------- 1. L'étoile qui guide (va avec etoile.js) ----------------
+   majEtoile() place l'étoile en coordonnées écran (translate3d) :
+   on ancre donc #astre en haut à gauche, sans le centrage par marge. */
+.astre{
+  left:0; top:0; margin:0;
+  transform-origin:50% 50%;
+  transition:opacity .6s ease;           /* seule l'opacité est lissée */
+}
+/* halo : un peu plus large et plus doux qu'avant, il reste lisible
+   quand l'étoile rapetisse dans la marge */
+.astre::before{
+  inset:-100px;
+  background:radial-gradient(circle closest-side,rgba(227,207,150,.30) 0%,rgba(227,207,150,.13) 35%,rgba(227,207,150,.04) 65%,rgba(227,207,150,0) 100%);
+}
+/* lent « souffle » lumineux de l'étoile (scintillement doux) */
+.astre svg{animation:astre-souffle 5s ease-in-out infinite}
+@keyframes astre-souffle{
+  0%,100%{filter:drop-shadow(0 0 12px rgba(227,207,150,.6))}
+  50%    {filter:drop-shadow(0 0 22px rgba(227,207,150,.9))}
+}
+@media (prefers-reduced-motion:reduce){
+  .astre svg{animation:none}
+}
+
+/* ---------- 2. Les Rois mages en bas de page ------------------------
+   <div id="mages" aria-hidden="true"></div> juste avant <footer>.
+   L'illustration est décorative (aria-hidden) : on l'affiche en image
+   de fond, donc aucune modification de app.js n'est nécessaire.
+   Le bloc sort du conteneur .page pour occuper toute la largeur
+   (le body a déjà overflow-x:hidden). */
+#mages{
+  position:relative;
+  width:100vw;
+  margin-left:calc(50% - 50vw);
+  margin-top:clamp(28px,6vw,64px);
+  /* hauteur fluide : 160 px sur téléphone, 16 % de la largeur ensuite,
+     340 px au maximum. La toile de magi.svg (4000×400) est si large que
+     « cover » la met toujours à l'échelle par la hauteur : les mages ne
+     sont jamais rognés, seules les dunes s'allongent sur les côtés. */
+  height:clamp(160px,16vw,340px);
+  background:url('/magi.svg') center bottom / cover no-repeat;
+  pointer-events:none;
+}
+/* la ligne de dunes se prolonge sans couture dans le pied de page :
+   la dune avant de magi.svg se termine exactement en #0f1a2e (var(--nuit)) */
+#mages + footer{margin-top:0;padding-top:6px}
+/* Le pied de page devient le « sol » : fond de nuit pleine largeur
+   (astuce box-shadow + clip-path, sans toucher au HTML), pour que les
+   étoiles du ciel ne scintillent pas sous les dunes. */
+#mages + footer{
+  opacity:1;                       /* l'opacité .8 d'origine laissait voir les
+                                      étoiles à travers le sol : on la reporte
+                                      sur la couleur du texte */
+  color:rgba(227,207,150,.85);
+  background:var(--nuit);
+  box-shadow:0 0 0 100vmax var(--nuit);
+  clip-path:inset(0 -100vmax -100vmax);
+}
+
+/* Téléphone : on cadre les mages un peu plus serré (ils restent
+   lisibles à 390 px) ; cover recadre automatiquement les côtés. */
+@media (max-width:720px){
+  #mages{height:160px;background-position:45% bottom}
+}
+
+/* « Réduire les animations » : magi.svg contient sa propre règle
+   @media (prefers-reduced-motion:reduce), mais Chrome ne l'applique pas
+   à une image de fond (vérifié). On sert donc la version figée,
+   magi-fixe.svg (identique, sans la marche), à déposer aussi à la racine. */
+@media (prefers-reduced-motion:reduce){
+  #mages{background-image:url('/magi-fixe.svg')}
+}
+
+/* ===== Ajustements visuels (revue DA) ===== */
+/* P1.3 Pied de page : l'espacement de .15em sur des phrases entières
+   gêne la lecture de l'adresse. On le réserve aux liens en capitales. */
+footer{font-size:.82rem;letter-spacing:.03em;line-height:1.7}
+footer .eglise{font-size:1.3rem;margin-bottom:2px}
+/* liens du pied : cibles tactiles de 44 px */
+footer nav{gap:0 6px}
+footer nav a{display:inline-flex;align-items:center;min-height:44px;padding:0 8px;letter-spacing:.14em;opacity:.9}
+footer nav a:hover,footer nav a:focus-visible{opacity:1;color:var(--ivoire)}
+
+/* P1.5 Cibles tactiles : filtres, zoom et ronds de section. */
+.filtres button{min-height:44px;padding:0 16px}
+.zoom button{width:44px;height:44px}
+/* le rond garde son dessin de 36 px, mais sa zone de toucher fait 52 px */
+.rond::after{content:"";position:absolute;inset:-8px;border-radius:50%}
+
+/* P1.6 Le halo des ronds pulse en continu : à couper avec
+   « réduire les animations » (oublié dans le CSS actuel). */
+@media (prefers-reduced-motion:reduce){
+  .rond{animation:none;box-shadow:0 0 0 4px rgba(227,207,150,.25)}
+}
+
+/* P1.7 Focus clavier visible et cohérent (filet or), partout. */
+a:focus-visible,button:focus-visible{outline:2px solid var(--or);outline-offset:3px}
+
+/* ---------------------------------------------------------------------
+   P2 — COHÉRENCE DES COMPOSANTS ET RYTHME
+   --------------------------------------------------------------------- */
+
+/* P2.1 Vignettes de la liste : sur ordinateur, les titres touchent le
+   bord droit de la carte (« La Nativité de pierre blanche »). On donne
+   de l'air et on autorise le texte à se replier proprement. */
+.vignette > div{padding:12px 16px 12px 0;min-width:0}
+.vignette b{text-wrap:balance}
+.vignette span{display:block;margin-top:3px;letter-spacing:.12em;line-height:1.5}
+/* survol et focus : la carte se soulève à peine, le liseré s'éclaire */
+.vignette{transition:transform .25s ease,box-shadow .25s ease,border-color .25s ease}
+.vignette:hover,.vignette:focus-visible{
+  transform:translateY(-2px);
+  border-left-color:var(--or-doux);
+  box-shadow:0 14px 34px rgba(0,0,0,.45),0 0 0 1px rgba(201,165,76,.35);
+}
+@media (prefers-reduced-motion:reduce){.vignette{transition:none}.vignette:hover{transform:none}}
+
+/* P2.2 Numéros des vignettes dans une section : aujourd'hui pastille
+   or pâle pleine, alors que les ronds du plan sont « nuit + contour or ».
+   Même dessin partout, pour que le visiteur fasse le lien plan ↔ liste.
+   (!important nécessaire : app.js pose un style en ligne.) */
+.vignette i{
+  background:var(--nuit) !important;
+  color:var(--or-doux);
+  border:2px solid var(--or-doux);
+  width:32px;height:32px;line-height:28px;
+}
+
+/* P2.3 Visionneuse de section : sur ordinateur, la photo (verticale)
+   flotte entre deux grandes bandes noires (#0b1322) plus sombres que la
+   nuit, avec le filet or et l'ombre sur toute la largeur. On efface le
+   cadre et on porte le filet or sur la photo elle-même. */
+.visionneuse{background:transparent;box-shadow:none;border-top:0}
+.plan::after{
+  content:"";position:absolute;left:0;right:0;top:0;height:3px;
+  background:var(--or);border-radius:4px 4px 0 0;pointer-events:none;
+}
+.plan img{border-radius:4px;box-shadow:0 18px 40px -10px rgba(0,0,0,.6)}
+
+/* P2.4 Titres : équilibrage des lignes, pour éviter un mot seul en
+   deuxième ligne (« blanche » sur la fiche C-005 au téléphone). */
+h1,.titre-section,.hero h1,blockquote,.intro{text-wrap:balance}
+p{text-wrap:pretty}
+
+/* P2.5 Rythme vertical de la fiche : espacements sur une même échelle
+   (8 / 16 / 24 / 32 px) au lieu de 20, 22, 24, 26… */
+.contenu{padding:32px 26px 32px}
+.sep{margin:24px 0}
+section + section{margin-top:24px !important}  /* app.js pose 20px en ligne */
+h2{margin-bottom:8px;line-height:1.2}
+.encart{margin-top:32px;padding:20px 22px}
+blockquote{margin-top:32px}
+.lien-section{margin-top:24px}
+.lien-info{margin-top:16px}
+
+/* P2.6 Titre de section et sous-titre (pages Les crèches, sections) :
+   un filet or court sous le sous-titre, comme sur les cartels de musée,
+   ancre visuellement le bloc avant la grille. */
+.sous-titre{margin:10px 0 24px}
+.sous-titre::after{content:"";display:block;width:36px;height:1px;margin:14px auto 0;background:var(--or);opacity:.7}
+
+/* ---------------------------------------------------------------------
+   P3 — MATIÈRE ET FINITIONS
+   --------------------------------------------------------------------- */
+
+/* P3.1 Cartes ivoire : « papier de carte de vœux ». Ombre moins lourde
+   (la DA proscrit les ombres portées lourdes), fin liseré doré intérieur
+   et grain de papier à peine perceptible (bruit SVG, 0,5 Ko, aucun
+   fichier en plus). */
+.carte,.vignette{
+  background-color:var(--ivoire);
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .42 0 0 0 0 .39 0 0 0 0 .33 0 0 0 .06 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+.carte{
+  box-shadow:
+    inset 0 0 0 1px rgba(201,165,76,.22),
+    0 2px 4px rgba(0,0,0,.25),
+    0 24px 48px -16px rgba(0,0,0,.6);
+}
+
+/* P3.2 Encart « Le saviez-vous ? » : coins droits côté filet,
+   et un très léger dégradé vers l'ivoire (effet papier plié). */
+.encart{border-radius:0 3px 3px 0;background:linear-gradient(90deg,#efe6d1,#f2ead9)}
+
+/* P3.3 Citation : petite étoile à quatre branches au-dessus du verset,
+   même ornement que les séparateurs (pas d'emoji, pas de caractère). */
+blockquote::before{
+  content:"";display:block;width:12px;height:12px;margin:0 auto 12px;
+  background:var(--or);
+  -webkit-mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0L6 4L10 5L6 6L5 10L4 6L0 5L4 4Z'/%3E%3C/svg%3E") center/contain no-repeat;
+          mask:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 10 10'%3E%3Cpath d='M5 0L6 4L10 5L6 6L5 10L4 6L0 5L4 4Z'/%3E%3C/svg%3E") center/contain no-repeat;
+}
+
+/* P3.4 Photo de la fiche : un filet de nuit très fin sous la photo
+   sépare l'image du papier, comme un passe-partout. */
+.carte .photo{border-bottom:1px solid rgba(201,165,76,.35)}
+
+/* P3.5 Vignettes : l'image est légèrement plus grande sur ordinateur
+   (les crèches sont les seules couleurs vives : leur donner la place). */
+@media (min-width:721px){
+  .vignette img{width:104px;height:104px}
+}
+
+/* Barre du haut : fond de nuit pour que le texte ne passe pas visiblement dessous au défilement */
+@media (min-width:721px){
+  .barre{background:linear-gradient(180deg,rgba(15,26,46,.98) 0%,rgba(15,26,46,.94) 65%,rgba(15,26,46,0) 100%);padding-bottom:18px}
+}

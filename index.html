@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Crèches du monde · Église Saint-Étienne d'Ohain</title>
 <meta name="description" content="Exposition de crèches de Noël venues du monde entier, à l'église Saint-Étienne d'Ohain. Découvrez l'origine et l'histoire de chaque crèche.">
 <meta name="theme-color" content="#0f1a2e">
@@ -20,23 +20,22 @@
   </svg>
 </div>
 <div class="barre">
-  <a class="marque" href="/#">Crèches du monde</a>
-  <button class="burger" id="burger" aria-label="Menu" aria-expanded="false">☰</button>
-  <nav id="menu">
-    <a href="/#">Accueil</a>
-    <a href="/#creches">Les crèches</a>
-    <a href="/#carte">Carte</a>
-    <a href="/#don">Faire un don</a>
-    <a href="/#contact">Contact</a>
+  <nav id="menu" aria-label="Navigation principale">
+    <a href="/#"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 2l1.8 8.2L22 12l-8.2 1.8L12 22l-1.8-8.2L2 12l8.2-1.8z"/></svg><span>Accueil</span></a>
+    <a href="/#creches"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 4h7v7H4zM13 4h7v7h-7zM4 13h7v7H4zM13 13h7v7h-7z"/></svg><span>Les crèches</span></a>
+    <a href="/#carte"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21s-6.5-6.2-6.5-11a6.5 6.5 0 0 1 13 0c0 4.8-6.5 11-6.5 11z"/><circle cx="12" cy="10" r="2.3"/></svg><span>Carte</span></a>
+    <a href="/#don"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 20s-7.5-4.6-7.5-10A4.3 4.3 0 0 1 12 7.4 4.3 4.3 0 0 1 19.5 10c0 5.4-7.5 10-7.5 10z"/></svg><span class="long">Faire un don</span><span class="court">Don</span></a>
+    <a href="/#contact"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 6h17v12h-17zM3.5 6.5l8.5 7 8.5-7"/></svg><span>Contact</span></a>
   </nav>
 </div>
 <div class="page">
   <header>
-    <div style="height:130px"></div>
+    <div class="espace-astre"></div>
     <div class="expo" id="expo">Crèches du monde</div>
     <div class="numero" id="numero"></div>
   </header>
-  <main id="vue"></main>
+  <main id="vue" tabindex="-1"></main>
+  <div id="mages" aria-hidden="true"></div>
   <footer>
     <svg class="croix" viewBox="0 0 18 26" aria-hidden="true"><path fill="currentColor" d="M8 0h2v7h8v2h-8v17H8V9H0V7h8z"/></svg>
     <span class="eglise">Église Saint-Étienne d'Ohain</span>
