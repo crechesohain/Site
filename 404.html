@@ -5,7 +5,7 @@
 (function(){
   var p=location.pathname.replace(/\/+$/,'').split('/').filter(Boolean), h='';
   if(p[0]==='c'&&p[1]) h=p[1].toUpperCase();
-  else if(p[0]==='s'&&p[1]) h='s-'+p[1].toLowerCase();
+  else if(p[0]==='s'&&p[1]){ var q=p[1].toLowerCase(); h=q.indexOf('s-')===0?q:'s-'+q; }
   else if(['creches','carte','don','contact','a-propos','mentions-legales'].indexOf(p[0])>=0) h=p[0];
   location.replace('/'+(h?'#'+h:''));
 })();
