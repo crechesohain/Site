@@ -99,10 +99,11 @@
   /* ---------- la fresque ---------- */
   var H=640;                                   // hauteur de la scène en px
   function hash(t){var h=2166136261;for(var i=0;i<t.length;i++){h^=t.charCodeAt(i);h=Math.imul(h,16777619)}return h>>>0}
+  function largeurDispo(){ var p=document.querySelector('.page'); var w=p?p.clientWidth-38:innerWidth-38; return Math.max(1100,Math.floor(w)); }
   function places(n){
     /* emplacements au sol, du plus proche de l'étable au plus éloigné ; la scène s'élargit avec le nombre de personnages */
     var rangs=[[0.81,48,74],[0.89,54,70],[0.97,60,66]];   // y (fraction), largeur du personnage, pas entre deux
-    var W=1100, liste;
+    var W=largeurDispo(), liste;
     for(;;){
       liste=[]; var cx=W/2;
       rangs.forEach(function(r,i){
@@ -170,7 +171,15 @@
     h+='<p class="aide">'+P.length+' personnage'+(P.length>1?'s':'')+' · '+(matchMedia('(hover:hover)').matches?'Passez sur un personnage pour voir son nom.':'Touchez un personnage pour voir son nom, faites glisser la fresque pour la parcourir.')+' Les étoiles s\'allument après relecture par un bénévole.</p>';
     return h;
   }
+  var largeurRendue=0, minuteur=null;
+  addEventListener('resize',function(){
+    clearTimeout(minuteur);
+    minuteur=setTimeout(function(){
+      if(/^#creche-de-tous/.test(location.hash)&&document.getElementById('fresque')&&Math.abs(largeurDispo()-largeurRendue)>40) window.TOUS_rendre();
+    },250);
+  });
   function brancherFresque(moi){
+    largeurRendue=largeurDispo();
     var f=document.getElementById('fresque');
     if(!f) return;
     // centre la fresque sur l'étable, ou sur « mon » personnage
