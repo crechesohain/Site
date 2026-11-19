@@ -1,4 +1,4 @@
 [
- {"id":"s-essai","titre":"Le meuble aux trois crèches","sousTitre":"Section d'essai","photo":"s-essai.jpg",
-  "points":[{"id":"C-001","x":21,"y":70},{"id":"C-002","x":46,"y":51},{"id":"C-003","x":79,"y":70}]}
+ {"id": "s-essai", "titre": "Le meuble aux trois crèches", "sousTitre": "Section d'essai", "photo": "s-essai.jpg", "points": [{"id": "C-001", "x": 21, "y": 70}, {"id": "C-002", "x": 46, "y": 51}, {"id": "C-003", "x": 79, "y": 70}]},
+ {"id": "s-07", "titre": "Les crèches d'Afrique", "sousTitre": "Couloir droit, contre le mur du fond", "photo": "s-07.jpg", "points": [{"id": "C-009", "x": 25.5, "y": 53.0}, {"id": "C-006", "x": 29.3, "y": 56.4}, {"id": "C-008", "x": 29.6, "y": 50.4}, {"id": "C-007", "x": 33.3, "y": 55.5}, {"id": "C-005", "x": 16.6, "y": 69.1}, {"id": "C-015", "x": 27.9, "y": 71.3}, {"id": "C-014", "x": 33.5, "y": 72.8}, {"id": "C-004", "x": 15.6, "y": 82.3}, {"id": "C-010", "x": 25.4, "y": 79.7}, {"id": "C-011", "x": 29.9, "y": 79.4}, {"id": "C-013", "x": 33.1, "y": 78.0}, {"id": "C-012", "x": 35.8, "y": 78.6}]}
 ]
