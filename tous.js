@@ -144,7 +144,7 @@
     if(!donnees.perso) return titreH+intro+boutons+'<p class="aide" id="tousEtat">Chargement de la crèche…</p>';
     var P=donnees.perso, E=donnees.etoiles, pl=places(P.length), W=pl.W;
     var h=titreH+intro+boutons;
-    h+='<div class="tous-cadre"><div class="tous-compteur"><span aria-hidden="true"></span>'+E.length+' étoile'+(E.length>1?'s':'')+' allumée'+(E.length>1?'s':'')+'</div>';
+    h+='<div class="tous-cadre">';
     h+='<div class="tous-fresque" id="fresque" tabindex="0" aria-label="Fresque de la crèche, faites glisser pour la parcourir"><div class="tous-scene" style="width:'+W+'px;height:'+H+'px">';
     // ciel : une case par étoile, réparties au hasard (mais toujours au même endroit pour une même étoile)
     var cols=Math.floor(W/64), lignes=5, cases=[];
