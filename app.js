@@ -206,8 +206,8 @@ function majEtoile(y, max) {
         h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" title="Fiche en préparation" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
       }
     });
-    h+='</div></div><div class="zoom"><button type="button" data-z="-1" aria-label="Dézoomer">−</button><button type="button" data-z="1" aria-label="Zoomer">+</button></div>';
-    h+='<p class="aide">Touchez un rond pour ouvrir la fiche de la crèche.</p>';
+    h+='</div></div><div class="zoom"><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="reset" aria-label="Voir toute la photo" title="Voir toute la photo">⤢</button><button type="button" data-z="in" aria-label="Zoomer">+</button></div>';
+    h+='<p class="aide">Touchez un rond pour ouvrir la fiche. Pincez la photo pour zoomer'+(matchMedia('(hover:hover)').matches?' (ou double-cliquez, puis faites glisser)':'')+'.</p>';
     return h+'<div class="liste grille">'+l+'</div>';
   }
 
@@ -289,29 +289,105 @@ function majEtoile(y, max) {
     return h+carte('<h1>'+(estFiche?'Fiche en préparation':'Page introuvable')+'</h1><p>'+(estFiche?'La fiche de cette crèche ('+esc(id)+') n\'est pas encore publiée. Revenez bientôt&nbsp;!':'Cette page n\'existe pas ou plus.')+'</p><p><a class="bouton" href="#creches">Voir toutes les crèches</a></p>');
   }
 
-  /* ---------- zoom de la visionneuse ---------- */
-  var zoom=1, base=0;
-  function taille(){
-    var plan=document.getElementById('plan'), v=document.getElementById('visio'); if(!plan) return;
-    var img=plan.querySelector('img'); if(!img.naturalWidth) return;
-    base=Math.min(v.clientWidth, window.innerHeight*0.78*img.naturalWidth/img.naturalHeight);
-    plan.style.width=(base*zoom)+'px';
-  }
-  addEventListener('resize',taille);
-  function brancher(){
-    var plan=document.getElementById('plan');
-    if(plan){
-      zoom=1; var img=plan.querySelector('img');
-      if(img.complete) taille(); else img.addEventListener('load',taille);
-      document.querySelectorAll('.zoom button').forEach(function(b){
-        b.addEventListener('click',function(){
-          var v=document.getElementById('visio'), cx=(v.scrollLeft+v.clientWidth/2)/plan.offsetWidth, cy=(v.scrollTop+v.clientHeight/2)/plan.offsetHeight;
-          zoom=Math.max(1,Math.min(3,zoom+Number(b.dataset.z)*0.75));
-          plan.style.width=(base*zoom)+'px';
-          setTimeout(function(){v.scrollLeft=cx*plan.offsetWidth-v.clientWidth/2; v.scrollTop=cy*plan.offsetHeight-v.clientHeight/2;},260);
-        });
-      });
+  /* ---------- visionneuse de section : zoom au pincement, glisser, double-clic ---------- */
+  var V=null;
+  function visionneuse(){
+    var visio=document.getElementById('visio'), plan=document.getElementById('plan'); V=null;
+    if(!visio) return;
+    var img=plan.querySelector('img');
+    var st={s:1,x:0,y:0,w:0,h:0}, MAX=4, pts={}, geste=null, bouge=false, dernierTap=0;
+    function dims(){
+      if(!img.naturalWidth) return;
+      var dispo=visio.parentNode.clientWidth, ratio=img.naturalHeight/img.naturalWidth;
+      var w=Math.min(dispo, (window.innerHeight*0.78)/ratio);
+      st.w=Math.round(w); st.h=Math.round(w*ratio);
+      visio.style.width=st.w+'px'; visio.style.height=st.h+'px';
+      plan.style.width=st.w+'px'; plan.style.height=st.h+'px';
+      appliquer(false);
     }
+    function borner(){
+      st.s=Math.max(1,Math.min(MAX,st.s));
+      st.x=Math.min(0,Math.max(st.w-st.w*st.s,st.x));
+      st.y=Math.min(0,Math.max(st.h-st.h*st.s,st.y));
+    }
+    function appliquer(anime){
+      borner();
+      plan.style.transition=anime?'transform .25s ease':'none';
+      plan.style.transform='translate('+st.x+'px,'+st.y+'px) scale('+st.s+')';
+      plan.style.setProperty('--inv',(1/st.s).toFixed(4));
+      visio.classList.toggle('zoome',st.s>1.01);
+      visio.style.touchAction=st.s>1.01?'none':'pan-y';
+    }
+    function zoomer(f,cx,cy,anime){ // cx,cy : point fixe, en px dans la visionneuse
+      var n=Math.max(1,Math.min(MAX,st.s*f)), k=n/st.s;
+      st.x=cx-(cx-st.x)*k; st.y=cy-(cy-st.y)*k; st.s=n; appliquer(anime);
+    }
+    function local(e){var r=visio.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}}
+    function liste(){return Object.keys(pts).map(function(k){return pts[k]})}
+    visio.addEventListener('pointerdown',function(e){
+      pts[e.pointerId]=local(e); bouge=false;
+      var l=liste();
+      if(l.length===2){
+        var d=Math.hypot(l[0].x-l[1].x,l[0].y-l[1].y);
+        geste={type:'pince',d:d,s:st.s,cx:(l[0].x+l[1].x)/2,cy:(l[0].y+l[1].y)/2,x:st.x,y:st.y};
+      } else if(l.length===1){
+        geste={type:'glisse',px:l[0].x,py:l[0].y,x:st.x,y:st.y};
+      }
+    });
+    visio.addEventListener('pointermove',function(e){
+      if(!pts[e.pointerId]||!geste) return;
+      pts[e.pointerId]=local(e);
+      var l=liste();
+      if(geste.type==='pince'&&l.length===2){
+        bouge=true;
+        var d=Math.hypot(l[0].x-l[1].x,l[0].y-l[1].y), cx=(l[0].x+l[1].x)/2, cy=(l[0].y+l[1].y)/2;
+        var n=Math.max(1,Math.min(MAX,geste.s*d/geste.d)), k=n/geste.s;
+        st.s=n; st.x=cx-(geste.cx-geste.x)*k; st.y=cy-(geste.cy-geste.y)*k; appliquer(false);
+      } else if(geste.type==='glisse'&&l.length===1&&st.s>1.01){
+        var dx=l[0].x-geste.px, dy=l[0].y-geste.py;
+        if(Math.abs(dx)+Math.abs(dy)>6){bouge=true; if(visio.setPointerCapture) try{visio.setPointerCapture(e.pointerId)}catch(_){}}
+        if(bouge){st.x=geste.x+dx; st.y=geste.y+dy; appliquer(false)}
+      }
+    });
+    function fin(e){
+      delete pts[e.pointerId];
+      var l=liste();
+      if(l.length===1) geste={type:'glisse',px:l[0].x,py:l[0].y,x:st.x,y:st.y}; else if(!l.length) geste=null;
+    }
+    visio.addEventListener('pointerup',function(e){
+      // double tap au doigt : zoom avant / retour
+      if(e.pointerType==='touch'&&!bouge&&liste().length===1){
+        var t=Date.now(), p=local(e);
+        if(t-dernierTap<300&&!(e.target.closest&&e.target.closest('.rond'))){ if(st.s>1.01){st.s=1;st.x=0;st.y=0;appliquer(true)} else zoomer(2.5,p.x,p.y,true); dernierTap=0 }
+        else dernierTap=t;
+      }
+      fin(e);
+    });
+    visio.addEventListener('pointercancel',fin);
+    visio.addEventListener('pointerleave',function(e){if(e.pointerType==='mouse')fin(e)});
+    // un glissement ne doit pas ouvrir la fiche sous le doigt
+    visio.addEventListener('click',function(e){if(bouge){e.preventDefault();e.stopPropagation();bouge=false}},true);
+    visio.addEventListener('dblclick',function(e){
+      if(e.target.closest&&e.target.closest('.rond')) return;
+      var p=local(e); if(st.s>1.01){st.s=1;st.x=0;st.y=0;appliquer(true)} else zoomer(2.5,p.x,p.y,true);
+    });
+    // molette : la page défile normalement ; seul le pincement du pavé tactile (ctrl + molette) zoome
+    visio.addEventListener('wheel',function(e){
+      if(!e.ctrlKey) return;
+      e.preventDefault(); var p=local(e); zoomer(Math.exp(-e.deltaY*0.01),p.x,p.y,false);
+    },{passive:false});
+    document.querySelectorAll('.zoom button').forEach(function(b){
+      b.addEventListener('click',function(){
+        if(b.dataset.z==='reset'){st.s=1;st.x=0;st.y=0;appliquer(true);return}
+        zoomer(b.dataset.z==='in'?1.6:1/1.6,st.w/2,st.h/2,true);
+      });
+    });
+    if(img.complete) dims(); else img.addEventListener('load',dims);
+    V={dims:dims};
+  }
+  addEventListener('resize',function(){if(V)V.dims()});
+  function brancher(){
+    visionneuse();
     document.querySelectorAll('[data-retour]').forEach(function(a){
       a.addEventListener('click',function(e){
         if(precedent===a.dataset.retour||(precedent===''&&a.dataset.retour==='')){e.preventDefault();history.back()}

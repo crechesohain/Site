@@ -389,3 +389,12 @@ blockquote::before{
 @media (min-width:721px){
   .barre{background:linear-gradient(180deg,rgba(15,26,46,.98) 0%,rgba(15,26,46,.94) 65%,rgba(15,26,46,0) 100%);padding-bottom:18px}
 }
+
+/* ===== Visionneuse de section v2 : cadre à la taille exacte de la photo, zoom par transformation ===== */
+.visionneuse{overflow:hidden !important;max-height:none !important;margin:0 auto;touch-action:pan-y;overscroll-behavior:auto;border-radius:4px;user-select:none;-webkit-user-select:none}
+.visionneuse.zoome{cursor:grab}
+.visionneuse.zoome:active{cursor:grabbing}
+.plan{position:relative;transform-origin:0 0;will-change:transform;transition:none}
+.plan img{width:100%;height:100%;pointer-events:none}
+.plan .rond{transform:translate(-50%,-50%) scale(var(--inv,1))}
+.zoom button[data-z="reset"]{font-size:1.05rem}
