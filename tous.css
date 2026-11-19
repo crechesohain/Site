@@ -1,0 +1,74 @@
+/* « La crèche de tous » */
+.tous-actions{display:flex;flex-wrap:wrap;gap:12px;justify-content:center;margin:18px 0 22px}
+.tous-actions .bouton{margin-top:0}
+.bouton.plein-or{background:var(--or);color:var(--nuit);border-color:var(--or);font-weight:700}
+.bouton:disabled{opacity:.6;cursor:default}
+.page.tres-large{max-width:1400px}
+.tous-cadre{position:relative;border:1px solid rgba(201,165,76,.45);border-radius:6px;overflow:hidden;box-shadow:0 18px 40px -12px rgba(0,0,0,.6)}
+.tous-fresque{overflow-x:auto;overflow-y:hidden;scrollbar-width:thin;scrollbar-color:var(--or) transparent;cursor:grab;-webkit-overflow-scrolling:touch}
+.tous-fresque:active{cursor:grabbing}
+.tous-fresque:focus-visible{outline:2px solid var(--or-doux);outline-offset:-2px}
+.tous-scene{position:relative;background:radial-gradient(ellipse at 50% 30%,#1f3256 0%,#16243d 40%,#0f1a2e 100%);overflow:hidden;user-select:none;-webkit-user-select:none}
+.tous-scene svg{overflow:visible}
+.tous-sol{position:absolute;left:0;right:0;bottom:0;height:34%;background:linear-gradient(180deg,#2a2a35 0%,#1d1b24 100%);border-top:1px solid rgba(201,165,76,.35)}
+.tous-bethleem{position:absolute;left:50%;top:38px;width:0;height:0}
+.tous-bethleem i{position:absolute;left:-70px;top:-30px;width:140px;height:140px;border-radius:50%;background:radial-gradient(circle,rgba(227,207,150,.55) 0%,rgba(227,207,150,0) 70%)}
+.tous-bethleem b{position:absolute;left:-28px;top:12px;width:56px;height:56px;background:#f6f1e6;clip-path:polygon(50% 0,58% 42%,100% 50%,58% 58%,50% 100%,42% 58%,0 50%,42% 42%)}
+.tous-compteur{position:absolute;left:18px;top:14px;display:flex;align-items:center;gap:8px;font-size:.72rem;letter-spacing:.2em;text-transform:uppercase;color:var(--or-doux);opacity:.8;z-index:6;pointer-events:none}
+.tous-compteur span{display:block;width:10px;height:10px;background:var(--or-doux);clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%)}
+.tous-etoile{position:absolute;width:44px;height:44px;margin:-22px 0 0 -22px;border:0;padding:0;background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;z-index:5}
+.tous-etoile span{display:block;width:var(--t,10px);height:var(--t,10px);background:var(--or-doux);clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);animation:tous-scintille var(--d,3s) ease-in-out infinite}
+.tous-etoile.choisie span{width:22px;height:22px;background:var(--ivoire);filter:drop-shadow(0 0 8px var(--or-doux));animation:none}
+.tous-etoile:focus-visible{outline:2px solid var(--or-doux);border-radius:50%}
+@keyframes tous-scintille{0%,100%{opacity:.55}50%{opacity:1}}
+.tous-mages{position:absolute;left:calc(50% - 500px);top:79%;width:290px;height:160px;transform:translateY(-100%);z-index:70}
+.tous-etable{position:absolute;left:50%;bottom:22%;width:380px;height:280px;margin-left:-190px;z-index:75}
+.tous-perso{position:absolute;transform:translate(-50%,-100%);padding:0;border:0;background:transparent;cursor:pointer}
+.tous-perso svg{display:block}
+.tous-perso .tip{position:absolute;left:50%;bottom:100%;transform:translateX(-50%);margin-bottom:4px;white-space:nowrap;background:var(--ivoire);color:var(--encre);border-top:2px solid var(--or);border-radius:4px;padding:4px 10px;font:700 .8rem 'Lato',sans-serif;letter-spacing:0;opacity:0;pointer-events:none;transition:opacity .2s;z-index:200}
+.tous-perso:hover .tip,.tous-perso:focus .tip{opacity:1}
+.tous-perso:hover,.tous-perso:focus{z-index:150 !important}
+.tous-perso:focus-visible{outline:2px solid var(--or-doux);outline-offset:2px;border-radius:6px}
+.tous-perso.moi::after{content:"";position:absolute;left:50%;bottom:-6px;width:70%;height:8px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(ellipse,rgba(227,207,150,.8),rgba(227,207,150,0) 70%)}
+.tous-intention{max-width:640px;margin:18px auto 0;min-height:92px;background:var(--ivoire);color:var(--encre);border-radius:4px;border-top:3px solid var(--or);padding:16px 22px;text-align:center}
+.tous-intention small{display:block;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--or-encre,#7d6220)}
+.tous-intention p{font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.35rem;line-height:1.4;margin:8px 0 0}
+
+/* parcours de création et étoile */
+.tous-creer{max-width:440px;margin:0 auto;color:var(--ivoire)}
+.tous-creer h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:2.1rem;line-height:1.1;margin:4px 0 14px;color:var(--ivoire)}
+.tous-creer h1:focus{outline:none}
+.tous-etape-num{margin-top:14px;font-size:.72rem;letter-spacing:.25em;text-transform:uppercase;color:var(--or)}
+.tous-etapes{display:flex;gap:6px;margin-top:14px}
+.tous-etapes i{display:block;width:7px;height:7px;border-radius:4px;background:rgba(201,165,76,.3)}
+.tous-etapes i.fait,.tous-etapes i.cour{background:var(--or)}
+.tous-etapes i.cour{width:18px}
+.tous-genres{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.tous-genre{display:flex;flex-direction:column;align-items:center;gap:10px;padding:16px 8px;border-radius:8px;cursor:pointer;color:var(--ivoire);background:rgba(246,241,230,.05);border:1px solid rgba(201,165,76,.35);font:400 1rem 'Lato',sans-serif}
+.tous-genre.on{background:rgba(201,165,76,.18);border:2px solid var(--or)}
+.tous-genre b{font-size:1.1rem}
+.tous-apercu{height:250px;border-radius:8px;background:radial-gradient(ellipse at 50% 85%,rgba(227,207,150,.28) 0%,#0b1322 70%);border:1px solid rgba(201,165,76,.45);display:flex;align-items:flex-end;justify-content:center;padding-bottom:6px;margin-bottom:14px}
+.tous-parties{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:10px;scrollbar-width:none}
+.tous-choix{border:0;padding:0;margin:0 0 14px}
+.tous-choix legend{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--or);margin-bottom:8px;padding:0}
+.tous-choix > div{display:flex;flex-wrap:wrap;gap:8px}
+.puce{min-height:44px;padding:0 15px;border-radius:999px;cursor:pointer;white-space:nowrap;font:400 .9rem 'Lato',sans-serif;border:1px solid rgba(201,165,76,.5);background:transparent;color:var(--or-doux)}
+.puce.on{font-weight:700;background:var(--ivoire);color:var(--nuit);border-color:var(--ivoire)}
+.nuance{width:44px;height:44px;border-radius:50%;cursor:pointer;padding:0;border:1px solid rgba(227,207,150,.5)}
+.nuance.on{border:3px solid var(--ivoire);box-shadow:0 0 0 2px var(--or)}
+.puce:focus-visible,.nuance:focus-visible,.tous-genre:focus-visible{outline:2px solid var(--or-doux);outline-offset:2px}
+.tous-champ{display:flex;flex-direction:column;gap:6px;margin-bottom:14px;font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--or)}
+.tous-champ input,.tous-champ textarea{min-height:48px;border-radius:6px;border:1px solid rgba(201,165,76,.5);background:rgba(246,241,230,.06);color:var(--ivoire);padding:10px 14px;font:400 1.05rem 'Lato',sans-serif;letter-spacing:0;text-transform:none}
+.tous-champ textarea{background:var(--ivoire);color:var(--encre);font:italic 400 1.3rem 'Cormorant Garamond',serif;resize:vertical}
+.tous-champ .compte{align-self:flex-end;letter-spacing:0;text-transform:none;font-size:.85rem;color:var(--or-doux)}
+.tous-aide{font-size:1rem;line-height:1.55;color:var(--or-doux);margin:0 0 14px}
+.tous-aide.centre{text-align:center}
+.tous-erreur{background:#f6f1e6;color:#8a3b2e;border-left:3px solid #8a3b2e;padding:10px 14px;border-radius:2px;margin:0 0 14px}
+.tous-nav{display:flex;gap:10px;margin-top:8px}
+.tous-nav .bouton{flex:1;margin-top:0;min-height:52px}
+.tous-grande-etoile{width:60px;height:60px;margin:18px auto 0;background:var(--or-doux);clip-path:polygon(50% 0,60% 40%,100% 50%,60% 60%,50% 100%,40% 60%,0 50%,40% 40%);filter:drop-shadow(0 0 12px var(--or-doux))}
+.tous-etoile-page h1{text-align:center}
+button.lien{background:none;border:0;color:var(--or-doux);text-decoration:underline;font:400 1rem 'Lato',sans-serif;min-height:44px;cursor:pointer}
+.visuellement-cache{position:absolute !important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){.tous-etoile span{animation:none}}
+@media (min-width:721px){.barre nav{flex-wrap:wrap;justify-content:center}.barre nav a{padding:0 10px}}

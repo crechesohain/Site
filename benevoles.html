@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow">
+<title>Espace bénévoles · La crèche de tous</title>
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="/style.css?v=2026111915">
+<style>
+body{background:var(--nuit);color:var(--encre);min-height:100vh;padding:0}
+.b-tete{background:var(--nuit);color:var(--ivoire);padding:14px 20px;display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(201,165,76,.35)}
+.b-tete h1{font-family:'Cormorant Garamond',serif;font-weight:600;font-size:1.5rem;color:var(--ivoire);margin:0}
+.b-tete .b-droite{display:flex;gap:12px;align-items:center;color:var(--or-doux);font-size:.95rem}
+.b-corps{background:var(--ivoire);min-height:calc(100vh - 70px);padding:20px}
+.b-zone{max-width:1100px;margin:0 auto}
+.b-onglets{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.b-onglets button{min-height:44px;padding:0 16px;border-radius:999px;border:1px solid var(--gris);background:transparent;color:var(--encre);font:400 .95rem 'Lato',sans-serif;cursor:pointer}
+.b-onglets button[aria-selected="true"]{background:var(--nuit);color:var(--ivoire);border-color:var(--nuit);font-weight:700}
+.b-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.b-carte{background:#fff;border-radius:6px;border-top:3px solid var(--or-doux);padding:14px 16px;display:flex;gap:14px;align-items:flex-start}
+.b-carte.signalee{border-top-color:#8a3b2e}
+.b-carte.cache{opacity:.55;border-top-color:var(--gris)}
+.b-texte{flex:1;min-width:0}
+.b-texte q{display:block;font-family:'Cormorant Garamond',serif;font-style:italic;font-size:1.25rem;line-height:1.35;quotes:"« " " »"}
+.b-meta{font-size:.85rem;color:var(--gris);margin-top:4px}
+.b-alerte{display:inline-block;margin-top:6px;font-size:.78rem;font-weight:700;color:#8a3b2e;border:1px solid #8a3b2e;border-radius:999px;padding:2px 10px}
+.b-actions{display:flex;flex-direction:column;gap:6px;flex:none}
+.b-actions button,.b-btn{min-height:44px;padding:0 16px;border-radius:999px;font:700 .9rem 'Lato',sans-serif;cursor:pointer;border:0;background:var(--nuit);color:var(--ivoire)}
+.b-actions button.second,.b-btn.second{background:transparent;border:1px solid var(--gris);color:var(--encre);font-weight:400}
+.b-perso{width:64px;height:92px;flex:none;border-radius:6px;background:var(--nuit2);display:flex;align-items:flex-end;justify-content:center;overflow:hidden}
+.b-vide{color:var(--gris);font-size:1.05rem;padding:20px 0}
+.b-login{max-width:380px;margin:60px auto;background:var(--ivoire);border-top:3px solid var(--or);border-radius:6px;padding:28px}
+.b-login h2{margin:0 0 8px}
+.b-login label{display:flex;flex-direction:column;gap:6px;font-size:.85rem;font-weight:700;margin-top:14px}
+.b-login input{min-height:44px;border:1px solid var(--gris);border-radius:6px;padding:0 12px;font:400 1rem 'Lato',sans-serif}
+.b-login .b-btn{width:100%;margin-top:18px}
+.b-erreur{color:#8a3b2e;margin-top:12px;font-weight:700}
+</style>
+</head>
+<body>
+<header class="b-tete"><h1>Espace bénévoles · La crèche de tous</h1><div class="b-droite" id="droite"></div></header>
+<main class="b-corps" id="corps"><p class="b-vide">Chargement…</p></main>
+<script src="/tous-config.js?v=2026111916"></script>
+<script src="/tous.js?v=2026111916"></script>
+<script>
+(function(){
+  var CFG=window.TOUS_CONFIG, corps=document.getElementById('corps'), droite=document.getElementById('droite');
+  function esc(t){return String(t==null?'':t).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+  var S=null; try{S=JSON.parse(sessionStorage.getItem('tous-session')||'null')}catch(e){}
+  function garder(j){S={a:j.access_token,r:j.refresh_token,e:Date.now()+(j.expires_in-60)*1000};try{sessionStorage.setItem('tous-session',JSON.stringify(S))}catch(e){}}
+  function auth(type,body){
+    return fetch(CFG.url+'/auth/v1/token?grant_type='+type,{method:'POST',headers:{apikey:CFG.cle,'Content-Type':'application/json'},body:JSON.stringify(body)})
+      .then(function(r){return r.json().then(function(j){if(!r.ok)throw new Error(j.error_description||j.msg||'refus');garder(j);return j})});
+  }
+  function jeton(){ if(S&&Date.now()>S.e) return auth('refresh_token',{refresh_token:S.r}).then(function(){return S.a}); return Promise.resolve(S&&S.a); }
+  function api(chemin,opt){
+    opt=opt||{};
+    return jeton().then(function(t){
+      var h={apikey:CFG.cle,Authorization:'Bearer '+t,'Content-Type':'application/json','Accept-Profile':'creches','Content-Profile':'creches'};
+      if(opt.prefer) h.Prefer=opt.prefer;
+      return fetch(CFG.url+'/rest/v1/'+chemin,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined,cache:'no-store'});
+    }).then(function(r){ if(r.status===401){sortir();throw new Error('session')} if(!r.ok) return r.text().then(function(x){throw new Error(x)}); return r.status===204?null:r.json(); });
+  }
+  function sortir(){S=null;try{sessionStorage.removeItem('tous-session')}catch(e){}connexion()}
+
+  function connexion(msg){
+    droite.innerHTML='';
+    corps.innerHTML='<form class="b-login" id="login"><h2>Accès bénévoles</h2><p class="note">Identifiant et mot de passe communiqués par l\'organisateur.</p>'+
+      '<label>Identifiant<input id="id" autocomplete="username" required></label>'+
+      '<label>Mot de passe<input id="mdp" type="password" autocomplete="current-password" required></label>'+
+      '<button class="b-btn" type="submit">Entrer</button>'+(msg?'<p class="b-erreur" role="alert">'+esc(msg)+'</p>':'')+'</form>';
+    document.getElementById('id').focus();
+    document.getElementById('login').addEventListener('submit',function(e){
+      e.preventDefault();
+      var id=document.getElementById('id').value.trim(), mdp=document.getElementById('mdp').value;
+      if(id.indexOf('@')<0) id+='@creches-ohain.be';
+      auth('password',{email:id,password:mdp})
+        .then(function(){return api('rpc/est_benevole',{method:'POST',body:{}})})
+        .then(function(ok){ if(!ok){S=null;connexion('Ce compte n\'a pas accès à la modération.');return} onglet='attente'; charger(); })
+        .catch(function(){connexion('Identifiant ou mot de passe incorrect.')});
+    });
+  }
+
+  var onglet='attente', D={attente:[],allumees:[],perso:[]};
+  function charger(){
+    droite.innerHTML='<span id="resume"></span><button type="button" class="b-btn second" id="sortir" style="color:var(--or-doux);border-color:rgba(201,165,76,.6)">Se déconnecter</button>';
+    document.getElementById('sortir').addEventListener('click',sortir);
+    return Promise.all([
+      api('etoiles?select=id,cree_le,texte,signature,signalee&statut=eq.attente&order=cree_le.asc&limit=500'),
+      api('etoiles?select=id,cree_le,texte,signature,signalee,statut&statut=neq.attente&order=cree_le.desc&limit=300'),
+      api('personnages?select=id,cree_le,nom,config,visible,nom_masque&order=cree_le.desc&limit=500')
+    ]).then(function(d){D.attente=d[0];D.allumees=d[1];D.perso=d[2];dessiner()})
+      .catch(function(e){ if(e.message!=='session') corps.innerHTML='<p class="b-vide">Impossible de charger les données. Rechargez la page.</p>'; });
+  }
+  function quand(t){var d=new Date(t);return d.toLocaleDateString('fr-BE',{day:'numeric',month:'short'})+' à '+d.toLocaleTimeString('fr-BE',{hour:'2-digit',minute:'2-digit'})}
+  function dessiner(){
+    document.getElementById('resume').textContent=D.attente.length+' étoile'+(D.attente.length>1?'s':'')+' à approuver';
+    var t=[['attente','À approuver ('+D.attente.length+')'],['allumees','Étoiles traitées'],['perso','Personnages ('+D.perso.filter(function(p){return p.visible}).length+')']];
+    var h='<div class="b-zone"><div class="b-onglets" role="tablist">'+t.map(function(x){return '<button type="button" role="tab" data-o="'+x[0]+'" aria-selected="'+(onglet===x[0])+'">'+x[1]+'</button>'}).join('')+'<button type="button" class="b-btn second" id="actualiser">Actualiser</button></div><div class="b-liste">';
+    if(onglet==='attente'){
+      if(!D.attente.length) h+='<p class="b-vide">Aucune étoile en attente. Merci&nbsp;!</p>';
+      D.attente.forEach(function(e){
+        h+='<article class="b-carte'+(e.signalee?' signalee':'')+'"><div class="b-texte"><q>'+esc(e.texte)+'</q><div class="b-meta">'+esc(e.signature||'Anonyme')+' · '+quand(e.cree_le)+'</div>'+(e.signalee?'<span class="b-alerte">Signalée : coordonnées ou mot grossier</span>':'')+'</div>'+
+          '<div class="b-actions"><button type="button" data-e="'+e.id+'" data-s="allumee">Allumer</button><button type="button" class="second" data-e="'+e.id+'" data-s="refusee">Refuser</button></div></article>';
+      });
+    }
+    if(onglet==='allumees'){
+      if(!D.allumees.length) h+='<p class="b-vide">Aucune étoile traitée pour l\'instant.</p>';
+      D.allumees.forEach(function(e){
+        var on=e.statut==='allumee';
+        h+='<article class="b-carte'+(on?'':' cache')+'"><div class="b-texte"><q>'+esc(e.texte)+'</q><div class="b-meta">'+esc(e.signature||'Anonyme')+' · '+(on?'allumée':'refusée')+'</div></div>'+
+          '<div class="b-actions">'+(on?'<button type="button" class="second" data-e="'+e.id+'" data-s="refusee">Éteindre</button>':'<button type="button" data-e="'+e.id+'" data-s="allumee">Allumer</button>')+'</div></article>';
+      });
+    }
+    if(onglet==='perso'){
+      if(!D.perso.length) h+='<p class="b-vide">Aucun personnage pour l\'instant.</p>';
+      D.perso.forEach(function(p){
+        h+='<article class="b-carte'+(p.visible?'':' cache')+'"><div class="b-perso">'+window.TOUS.personnage(p.config,58)+'</div><div class="b-texte"><b>'+esc(p.nom||'Sans nom')+'</b><div class="b-meta">'+quand(p.cree_le)+(p.visible?' · sur la fresque':' · retiré')+'</div>'+(p.nom_masque?'<span class="b-alerte">Nom masqué automatiquement</span>':'')+'</div>'+
+          '<div class="b-actions">'+(p.visible?'<button type="button" class="second" data-p="'+p.id+'" data-v="false">Retirer</button>':'<button type="button" data-p="'+p.id+'" data-v="true">Remettre</button>')+(p.nom?'<button type="button" class="second" data-n="'+p.id+'">Effacer le nom</button>':'')+'</div></article>';
+      });
+    }
+    corps.innerHTML=h+'</div></div>';
+    corps.querySelectorAll('[data-o]').forEach(function(b){b.addEventListener('click',function(){onglet=b.dataset.o;dessiner()})});
+    document.getElementById('actualiser').addEventListener('click',charger);
+    corps.querySelectorAll('[data-e]').forEach(function(b){b.addEventListener('click',function(){b.disabled=true;api('etoiles?id=eq.'+b.dataset.e,{method:'PATCH',prefer:'return=minimal',body:{statut:b.dataset.s}}).then(charger).catch(function(){b.disabled=false;alerte()})})});
+    corps.querySelectorAll('[data-p]').forEach(function(b){b.addEventListener('click',function(){b.disabled=true;api('personnages?id=eq.'+b.dataset.p,{method:'PATCH',prefer:'return=minimal',body:{visible:b.dataset.v==='true'}}).then(charger).catch(function(){b.disabled=false;alerte()})})});
+    corps.querySelectorAll('[data-n]').forEach(function(b){b.addEventListener('click',function(){b.disabled=true;api('personnages?id=eq.'+b.dataset.n,{method:'PATCH',prefer:'return=minimal',body:{nom:null}}).then(charger).catch(function(){b.disabled=false;alerte()})})});
+  }
+  function alerte(){var z=corps.querySelector('.b-zone');if(z&&!z.querySelector('.b-erreur'))z.insertAdjacentHTML('afterbegin','<p class="b-erreur" role="alert">L\'action n\'a pas pu être enregistrée. Réessayez.</p>')}
+  setInterval(function(){ if(S&&document.visibilityState==='visible'&&onglet==='attente') charger(); },60000);
+  if(S) charger(); else connexion();
+})();
+</script>
+</body>
+</html>

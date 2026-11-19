@@ -310,6 +310,7 @@ function majEtoile(y, max) {
     h+='<h2>Hébergement</h2><p>GitHub Pages, GitHub Inc., 88 Colin P. Kelly Jr. Street, San Francisco, CA 94107, États-Unis.<br>Nom de domaine enregistré auprès d\'OVH SAS, 2 rue Kellermann, 59100 Roubaix, France.</p>';
     h+='<h2>Contenus</h2><p>Les textes ont été rédigés par l\'équipe avec l\'aide d\'un outil d\'intelligence artificielle et relus. L\'identification des crèches est donnée à titre indicatif ; toute correction est la bienvenue. Les photos ont été prises par l\'équipe, tous droits réservés. Les citations bibliques sont de courts extraits.</p>';
     h+='<h2>Vie privée</h2><p>Ce site ne dépose aucun cookie, n\'utilise aucun outil de statistiques ou de suivi, et ses polices de caractères sont hébergées sur le site lui-même. L\'hébergeur conserve des journaux techniques (dont l\'adresse IP des visiteurs) pour assurer la sécurité du service.</p>';
+    h+='<h2>La crèche de tous</h2><p>Les personnages (dessin et nom choisis) et les étoiles (intention et signature) que vous ajoutez sont publiés sur ce site&nbsp;: n\'y mettez ni nom de famille, ni adresse, ni numéro de téléphone. Ils sont enregistrés chez Supabase (serveurs dans l\'Union européenne) sans aucune donnée permettant de vous identifier, relus par les bénévoles, et effacés au plus tard trois mois après l\'exposition. Pour faire retirer un personnage ou une étoile, <a href="#contact">écrivez-nous</a>.</p>';
     h+='<p>Si vous nous écrivez, vos nom, adresse e-mail et message servent uniquement à vous répondre. Ils sont lus par les bénévoles de l\'équipe, conservés dans un compte Google de l\'exposition, et supprimés sur simple demande ou au plus tard un an après l\'exposition. Vous pouvez demander l\'accès à vos données, leur correction ou leur suppression à l\'adresse ci-dessus.</p>';
     return carte(h);
   }
@@ -514,6 +515,8 @@ function majEtoile(y, max) {
   }
   addEventListener('resize',function(){if(V)V.dims()});
   function brancher(){
+    var idt=location.hash.replace('#','');
+    if(window.TOUS) window.TOUS.brancher(idt);
     visionneuse();
     brancherCarte();
     document.querySelectorAll('[data-retour]').forEach(function(a){
@@ -554,13 +557,16 @@ function majEtoile(y, max) {
   var pages={'creches':liste,'carte':carteEglise,'don':don,'contact':contact,'a-propos':aPropos,'mentions-legales':mentions};
   function rendre(remonter){
     var id=location.hash.replace('#',''), c=trouve(id), s=sections.filter(function(x){return x.id===id})[0];
+    var base=id.split('/')[0], tous=window.TOUS&&/^(creche-de-tous|creer|etoile)$/.test(base);
     document.getElementById('expo').style.visibility='';
     document.querySelector('.page').classList.toggle('large',!!s||id==='creches'||id==='carte');
+    document.querySelector('.page').classList.toggle('tres-large',base==='creche-de-tous');
     var vue=document.getElementById('vue');
     if(remonter!==false){precedent=courant;courant=id}
-    vue.innerHTML=c?fiche(c):(s?section(s):(pages[id]?pages[id]():(/^(C-|s-)/i.test(id)?introuvable(id):accueil())));
-    /* onglet actif : la fiche appartient aux « crèches », une section à la « carte » */
-    var rub=c?'creches':((s||/^s-/i.test(id))?'carte':id);
+    vue.innerHTML=c?fiche(c):(s?section(s):(tous?window.TOUS.page(id):(pages[id]?pages[id]():(/^(C-|s-)/i.test(id)?introuvable(id):accueil()))));
+    if(tous) titre(base==='creer'?'Crée ton personnage':(base==='etoile'?'Allume une étoile':'La crèche de tous'));
+    /* onglet actif : la fiche appartient aux « crèches », une section à la « carte », la création à « la crèche de tous » */
+    var rub=c?'creches':((s||/^s-/i.test(id))?'carte':(tous?'creche-de-tous':id));
     document.querySelectorAll('#menu a').forEach(function(a){
       var on=a.getAttribute('href')==='/#'+rub||(rub===''&&a.getAttribute('href')==='/#');
       a.classList.toggle('actif',on);
@@ -576,6 +582,7 @@ function majEtoile(y, max) {
     maj();
   }
   var premier=true;
+  window.TOUS_rendre=function(){rendre(false)};
   /* mémorise la position de défilement de chaque page pour la retrouver au retour */
   var memo;
   function memoriser(){try{history.replaceState({y:window.scrollY},'')}catch(e){}}
