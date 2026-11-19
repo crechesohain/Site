@@ -40,7 +40,7 @@
   function personnage(cfg,w){
     var c=propre(cfg), fille=c.genre==='fille', cache=c.tete==='foulard', h=Math.round(w*200/140);
     var HB={long:'M24 50 Q24 22 50 22 Q76 22 76 50 L80 104 Q50 112 20 104 Z',nattes:'M19 64 a7 22 0 1 0 14 0 a7 22 0 1 0 -14 0 M67 64 a7 22 0 1 0 14 0 a7 22 0 1 0 -14 0',chignon:rond(50,23,11),milong:'M24 50 Q24 22 50 22 Q76 22 76 50 L78 80 Q50 86 22 80 Z'};
-    var HF={court:'M26 48 Q26 24 50 24 Q74 24 74 48 Q66 36 50 36 Q34 36 26 48 Z',frange:'M26 50 Q26 24 50 24 Q74 24 74 50 L72 43 L28 43 Z',boucle:'M27 47 a8 8 0 1 1 6 -14 a9 9 0 0 1 17 -7 a9 9 0 0 1 17 7 a8 8 0 1 1 6 14 Q50 34 27 47 Z',raie:'M26 50 Q24 22 52 24 Q76 26 74 50 Q70 34 56 32 Q40 34 26 50 Z',ras:'M28 40 Q50 22 72 40 Q50 32 28 40 Z',long:'M26 52 Q26 24 50 24 Q74 24 74 52 Q70 34 50 32 Q30 34 26 52 Z'};
+    var HF={court:'M26 48 Q26 24 50 24 Q74 24 74 48 Q66 36 50 36 Q34 36 26 48 Z',frange:'M26 50 Q26 24 50 24 Q74 24 74 50 L72 43 L28 43 Z',boucle:'M27 47 a8 8 0 1 1 6 -14 a9 9 0 0 1 17 -7 a9 9 0 0 1 17 7 a8 8 0 1 1 6 14 Q50 34 27 47 Z',raie:'M26 50 Q24 22 52 24 Q76 26 74 50 Q70 34 56 32 Q40 34 26 50 Z',ras:'M26.5 45 Q26 25 50 25 Q74 25 73.5 45 Q71 36 63 34 Q50 31.5 37 34 Q29 36 26.5 45 Z',long:'M26 52 Q26 24 50 24 Q74 24 74 52 Q70 34 50 32 Q30 34 26 52 Z'};
     var avant={long:'long',nattes:'long',chignon:'long',milong:'long'}[c.cheveux]||c.cheveux;
     var EY={points:{f:rond(41,52,2.6)+' '+rond(59,52,2.6)},grands:{b:rond(41,52,4.6)+' '+rond(59,52,4.6),f:rond(42,53,2.4)+' '+rond(60,53,2.4)},rieurs:{s:'M37 53 Q41 48 45 53 M55 53 Q59 48 63 53'},doux:{s:'M37 51 Q41 55 45 51 M55 51 Q59 55 63 51'}}[c.yeux];
     var BR={fins:['M37 45 L45 44 M55 44 L63 45',1.4],arques:['M36 46 Q41 41 46 45 M54 45 Q59 41 64 46',1.8],epais:['M36 45 L46 43.5 M54 43.5 L64 45',3.4],aucun:['',1]}[c.sourcils];
@@ -50,15 +50,15 @@
     var s='<svg class="perso" width="'+w+'" height="'+h+'" viewBox="-20 0 140 200" aria-hidden="true" focusable="false">';
     if(c.tenue==='ange') s+=chemin('M40 90 Q0 60 4 120 Q16 130 40 110 Z M60 90 Q100 60 96 120 Q84 130 60 110 Z','fill:#f6f1e6;fill-opacity:.9;stroke:#c9a54c;stroke-width:1.5');
     if(!cache) s+=chemin(HB[c.cheveux]||'','fill:'+c.couleurCheveux);
-    if(!longue) s+=chemin('M39 160 h8 v32 h-8 Z M53 160 h8 v32 h-8 Z','fill:#3b2d20');
+    if(!longue) s+=chemin('M38 160 h9 v32 h-9 Z M53 160 h9 v32 h-9 Z','fill:#3b2d20');
     s+=chemin('M34 194 a8 5 0 1 0 16 0 a8 5 0 1 0 -16 0 M50 194 a8 5 0 1 0 16 0 a8 5 0 1 0 -16 0','fill:'+({sandales:'#7a5c3e',bottes:'#2a2a2a',babouches:'#8a3b2e',pieds:c.teint}[c.chaussures]));
-    s+=chemin(longue?'M38 74 L62 74 L82 192 L18 192 Z':'M36 74 L64 74 L72 166 L28 166 Z','fill:'+c.couleur);
-    var manches='M39 76 L22 122 L31 126 L45 92 Z M61 76 L78 122 L69 126 L55 92 Z';
+    s+=chemin(longue?'M38 74 L62 74 L82 192 L18 192 Z':'M33 74 Q50 70 67 74 L69 166 L31 166 Z','fill:'+c.couleur);
+    var manches=longue?'M39 76 L22 122 L31 126 L45 92 Z M61 76 L78 122 L69 126 L55 92 Z':'M35 76 L20 122 L29 126 L42 94 Z M65 76 L80 122 L71 126 L58 94 Z';
     s+=chemin(manches,'fill:'+c.couleur)+chemin(manches,'fill:#000;fill-opacity:.12');
     if(c.tenue==='mage') s+=chemin('M50 76 L50 '+(longue?190:164),'fill:none;stroke:#c9a54c;stroke-width:3');
     if(c.tenue==='musicien') s+=chemin('M40 78 L62 120','fill:none;stroke:#c9a54c;stroke-width:3');
-    if(c.tenue==='berger'||c.tenue==='village') s+=chemin('M33 108 h34 v6 h-34 Z','fill:#3b2d20');
-    s+=chemin(rond(26,125,5)+' '+rond(74,125,5)+' M50 70 L44 80 L56 80 Z','fill:'+c.teint);
+    if(c.tenue==='berger'||c.tenue==='village') s+=chemin(longue?'M33 108 h34 v6 h-34 Z':'M31.5 112 h37 v6 h-37 Z','fill:#3b2d20');
+    s+=chemin((longue?rond(26,125,5)+' '+rond(74,125,5):rond(24.5,125,5)+' '+rond(75.5,125,5))+' M50 70 L44 80 L56 80 Z','fill:'+c.teint);
     s+='<circle cx="50" cy="50" r="24" style="fill:'+c.teint+'"/>';
     if(cache) s+=chemin('M21 58 Q21 18 50 18 Q79 18 79 58 L76 100 L67 72 Q68 32 50 32 Q32 32 33 72 L24 100 Z','fill:#cdbb94');
     else s+=chemin(HF[avant]||'','fill:'+c.couleurCheveux);
@@ -213,11 +213,12 @@
       h+='<div class="tous-apercu">'+personnage(C.c,150)+'</div>';
     }
     if(e===1){
-      h+='<div class="tous-parties" role="tablist" aria-label="Partie du visage">';
+      h+='<div class="tous-onglets-titre">Partie du visage</div><div class="tous-parties" role="tablist" aria-label="Partie du visage">';
       [['teint','Peau'],['cheveux','Cheveux'],['couleurCheveux','Couleur'],['yeux','Yeux'],['sourcils','Sourcils'],['nez','Nez'],['bouche','Bouche']].forEach(function(p){
-        h+='<button type="button" role="tab" class="puce'+(C.partie===p[0]?' on':'')+'" data-partie="'+p[0]+'" aria-selected="'+(C.partie===p[0])+'">'+p[1]+'</button>';
+        h+='<button type="button" role="tab" class="onglet'+(C.partie===p[0]?' on':'')+'" data-partie="'+p[0]+'" aria-selected="'+(C.partie===p[0])+'">'+p[1]+'</button>';
       });
-      h+='</div>'+puces(C.partie);
+      var noms={teint:'Choisis ta peau',cheveux:'Choisis ta coiffure',couleurCheveux:'Choisis la couleur de tes cheveux',yeux:'Choisis tes yeux',sourcils:'Choisis tes sourcils',nez:'Choisis ton nez',bouche:'Choisis ta bouche'};
+      h+='</div><div class="tous-panneau" role="tabpanel">'+puces(C.partie,noms[C.partie])+'</div>';
     }
     if(e===2) h+=puces('tenue','Tenue')+puces('couleur','Couleur');
     if(e===3) h+=puces('tete','Sur la tête')+puces('mains','Dans les mains')+puces('chaussures','Aux pieds');

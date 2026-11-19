@@ -72,3 +72,11 @@ button.lien{background:none;border:0;color:var(--or-doux);text-decoration:underl
 .visuellement-cache{position:absolute !important;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 @media (prefers-reduced-motion:reduce){.tous-etoile span{animation:none}}
 @media (min-width:721px){.barre nav{flex-wrap:wrap;justify-content:center}.barre nav a{padding:0 10px}}
+/* onglets du visage : barre soulignée, bien distincte des choix (pastilles) */
+.tous-onglets-titre{font-size:.7rem;letter-spacing:.25em;text-transform:uppercase;color:var(--or);margin-bottom:2px}
+.tous-parties{gap:0;border-bottom:1px solid rgba(201,165,76,.4);margin-bottom:0;padding-bottom:0}
+.onglet{flex:none;min-height:46px;padding:0 13px;border:0;border-bottom:3px solid transparent;background:transparent;color:var(--or-doux);font:400 .95rem 'Lato',sans-serif;cursor:pointer;margin-bottom:-1px;white-space:nowrap}
+.onglet.on{color:var(--ivoire);font-weight:700;border-bottom-color:var(--or)}
+.onglet:focus-visible{outline:2px solid var(--or-doux);outline-offset:-2px}
+.tous-panneau{background:rgba(246,241,230,.05);border:1px solid rgba(201,165,76,.25);border-top:0;border-radius:0 0 8px 8px;padding:12px 12px 2px;margin-bottom:14px}
+.tous-panneau .tous-choix legend{color:var(--or-doux);letter-spacing:.04em;text-transform:none;font-size:.95rem}
