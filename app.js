@@ -154,13 +154,6 @@ function majEtoile(y, max) {
     h+='</div>';
     h+='<p class="intro">Plus de trois cents crèches venues des quatre coins du monde racontent la naissance de Jésus avec les couleurs, les matières et les visages de chaque peuple. Scannez le QR code de chaque section, puis touchez une crèche pour découvrir son histoire.</p>';
     h+=temoignage();
-    if(sections.length){
-      h+='<div class="titre-bloc">Les sections</div><div class="liste">';
-      sections.forEach(function(s){
-        h+='<a class="vignette" href="#'+s.id+'"><img src="/mini/'+s.photo+'" alt="" width="92" height="92" decoding="async"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>';
-      });
-      h+='</div>';
-    }
     return h;
   }
 
@@ -193,7 +186,7 @@ function majEtoile(y, max) {
 
   function section(s){
     titre(s.titre);
-    var h=retour(precedent==='creches'?'creches':'carte', precedent==='creches'?'Toutes les crèches':'Toutes les sections');
+    var h=retour('carte','Carte de l\'église');
     h+='<h1 class="titre-section">'+esc(s.titre)+'</h1><div class="sous-titre">'+esc(s.sousTitre||'Section')+'</div>';
     h+='<div class="visionneuse" id="visio"><div class="plan" id="plan"><img src="/'+s.photo+'" alt="Vue d\'ensemble de la section '+esc(s.titre)+'">';
     var l='';
@@ -206,7 +199,7 @@ function majEtoile(y, max) {
         h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" title="Fiche en préparation" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
       }
     });
-    h+='</div></div><div class="zoom"><button type="button" data-z="out" aria-label="Dézoomer">−</button><button type="button" data-z="reset" aria-label="Voir toute la photo" title="Voir toute la photo">⤢</button><button type="button" data-z="in" aria-label="Zoomer">+</button></div>';
+    h+='</div></div><div class="zoom"><button type="button" class="voir-tout" data-z="reset">Voir toute la photo</button></div>';
     h+='<p class="aide">Touchez un rond pour ouvrir la fiche. Pincez la photo pour zoomer'+(matchMedia('(hover:hover)').matches?' (ou double-cliquez, puis faites glisser)':'')+'.</p>';
     return h+'<div class="liste grille">'+l+'</div>';
   }

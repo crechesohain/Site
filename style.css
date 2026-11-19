@@ -398,3 +398,7 @@ blockquote::before{
 .plan img{width:100%;height:100%;pointer-events:none}
 .plan .rond{transform:translate(-50%,-50%) scale(var(--inv,1))}
 .zoom button[data-z="reset"]{font-size:1.05rem}
+/* Un seul bouton sous la photo, visible seulement quand on a zoomé */
+.zoom{min-height:52px}
+.zoom .voir-tout{width:auto;height:auto;min-height:44px;padding:0 18px;border-radius:22px;font:400 .85rem 'Lato',sans-serif;letter-spacing:.08em;visibility:hidden;opacity:0;transition:opacity .2s}
+body:has(.visionneuse.zoome) .zoom .voir-tout{visibility:visible;opacity:1}
