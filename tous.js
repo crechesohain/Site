@@ -239,7 +239,8 @@
   function brancherCreer(){
     var box=document.querySelector('.tous-creer'); if(!box) return;
     function refaire(focus){
-      box.outerHTML=creer(); brancherCreer();
+      var b=document.querySelector('.tous-creer'); if(!b) return;
+      b.outerHTML=creer(); brancherCreer();
       var f=focus&&document.querySelector(focus); if(f) f.focus({preventScroll:true});
     }
     box.querySelectorAll('[data-k]').forEach(function(b){
@@ -293,7 +294,7 @@
   }
   function brancherEtoile(){
     var box=document.querySelector('.tous-etoile-page'); if(!box) return;
-    function refaire(){box.outerHTML=etoile();brancherEtoile()}
+    function refaire(){var b=document.querySelector('.tous-etoile-page'); if(!b) return; b.outerHTML=etoile();brancherEtoile()}
     var t=document.getElementById('tousTexte'), sg=document.getElementById('tousSigne'), n=document.getElementById('tousCompte');
     if(t) t.addEventListener('input',function(){S.texte=t.value;n.textContent=t.value.length+' / 140'});
     if(sg) sg.addEventListener('input',function(){S.signe=sg.value});
