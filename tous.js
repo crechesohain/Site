@@ -55,7 +55,11 @@
     // roi / reine mage : grande cape derrière
     if(T==='mage'){ var cape=large?'M27 72 Q50 66 73 72 L92 194 L8 194 Z':'M36 72 L64 72 L92 194 L8 194 Z'; s+=chemin(cape,'fill:'+col)+chemin(cape,'fill:#000;fill-opacity:.35'); }
     if(!longue) s+=chemin('M35 160 h12 v32 h-12 Z M53 160 h12 v32 h-12 Z','fill:#3b2d20');
-    s+=chemin('M34 194 a8 5 0 1 0 16 0 a8 5 0 1 0 -16 0 M50 194 a8 5 0 1 0 16 0 a8 5 0 1 0 -16 0','fill:'+({sandales:'#7a5c3e',bottes:'#2a2a2a',babouches:'#8a3b2e',pieds:c.teint}[c.chaussures]));
+    var pied='M35 194 a7 4.5 0 1 0 14 0 a7 4.5 0 1 0 -14 0 M51 194 a7 4.5 0 1 0 14 0 a7 4.5 0 1 0 -14 0';
+    if(c.chaussures==='sandales') s+=chemin(pied,'fill:'+c.teint)+chemin('M34 197.5 h16 v2.5 h-16 Z M50 197.5 h16 v2.5 h-16 Z','fill:#7a5c3e')+chemin('M36.5 192 L47.5 192 M42 189.5 L42 197 M52.5 192 L63.5 192 M58 189.5 L58 197','fill:none;stroke:#7a5c3e;stroke-width:1.8');
+    if(c.chaussures==='bottes') s+=chemin('M36 176 h11 v16 l3 7 h-17 q0 -5 3 -7 Z M53 176 h11 v16 q3 2 3 7 h-17 l3 -7 Z','fill:#2a2a2a')+chemin('M35.5 176 h12 v4 h-12 Z M52.5 176 h12 v4 h-12 Z','fill:#5a524a');
+    if(c.chaussures==='babouches') s+=chemin('M45 191 Q38 189 32 193 Q28 195 26 191.5 Q27 199 36 199.5 L49 199.5 Q51 193 45 191 Z M55 191 Q62 189 68 193 Q72 195 74 191.5 Q73 199 64 199.5 L51 199.5 Q49 193 55 191 Z','fill:#8a3b2e')+chemin('M33 195 Q40 193 47 195 M67 195 Q60 193 53 195','fill:none;stroke:#c9a54c;stroke-width:1.2');
+    if(c.chaussures==='pieds') s+=chemin(pied,'fill:'+c.teint)+chemin(rond(36.5,195.5,1.4)+' '+rond(39.5,197.3,1.3)+' '+rond(63.5,195.5,1.4)+' '+rond(60.5,197.3,1.3),'fill:'+c.teint+';stroke:#000;stroke-opacity:.25;stroke-width:.6');
     // corps : robe longue (fille, ange, mage) ou tunique (garçon)
     var corps=longue?(large?'M29 74 Q50 68 71 74 L82 192 L18 192 Z':'M38 74 L62 74 L82 192 L18 192 Z'):'M28 74 Q50 68 72 74 L74 166 L26 166 Z';
     s+=chemin(corps,'fill:'+col);
@@ -101,13 +105,28 @@
     s+=chemin(BR[0],'fill:none;stroke:'+c.couleurCheveux+';stroke-width:'+BR[1]+';stroke-linecap:round');
     s+=chemin(NO[0],'fill:#000;fill-opacity:.25')+chemin(NO[1],'fill:none;stroke:#000;stroke-opacity:.35;stroke-width:1.5;stroke-linecap:round');
     s+=chemin(MO[0],'fill:#6e2e2a')+chemin(MO[1],'fill:none;stroke:#6e2e2a;stroke-width:2;stroke-linecap:round');
-    var CH={couronne:['M34 30 L34 14 L42 23 L50 8 L58 23 L66 14 L66 30 Z','#c9a54c'],bonnet:['M25 42 Q25 15 50 15 Q75 15 75 42 Z','#8a3b2e'],paille:['M14 38 Q50 28 86 38 Q50 44 14 38 Z M32 36 Q34 18 50 18 Q66 18 68 36 Z','#d8b86a']}[c.tete];
+    var CH={couronne:['M34 30 L34 14 L42 23 L50 8 L58 23 L66 14 L66 30 Z','#c9a54c'],bonnet:['M25 42 Q25 15 50 15 Q75 15 75 42 Z','#8a3b2e'],paille:['M26 37 Q26 14 50 14 Q74 14 74 37 Z M8 39 Q50 27 92 39 Q50 48 8 39 Z','#d8b86a']}[c.tete];
     if(CH) s+=chemin(CH[0],'fill:'+CH[1]);
+    if(c.tete==='paille') s+=chemin('M26.5 31 Q50 27 73.5 31 L73.8 36 Q50 32 26.2 36 Z','fill:#8a3b2e');
     if(c.tete==='aureole') s+=chemin('M28 16 a22 6 0 1 0 44 0 a22 6 0 1 0 -44 0','fill:none;stroke:#e3cf96;stroke-width:3');
     if(c.mains==='lanterne') s+=chemin(rond(80,134,15),'fill:#e3cf96;fill-opacity:.35');
     if(c.mains==='etoile') s+=chemin(rond(84,108,14),'fill:#e3cf96;fill-opacity:.35');
-    var AC={lanterne:['M74 126 h12 v16 h-12 Z','#e3cf96','M76 126 Q80 118 84 126'],cadeau:['M66 116 h18 v16 h-18 Z','#c9a54c','M75 116 V132 M66 124 H84'],etoile:['M84 94 L87 105 L98 108 L87 111 L84 122 L81 111 L70 108 L81 105 Z','#f6f1e6',''],agneau:[rond(4,182,13)+' '+rond(-10,172,6),'#f6f1e6',''],flute:['M68 122 L96 96 L99 99 L71 125 Z','#c9a54c',''],panier:['M66 124 h22 l-3 12 h-16 Z','#a0804e','M68 124 Q77 110 86 124']}[c.mains];
+    var AC={lanterne:['M74 126 h12 v16 h-12 Z','#e3cf96','M76 126 Q80 118 84 126'],cadeau:['M66 116 h18 v16 h-18 Z','#c9a54c','M75 116 V132 M66 124 H84'],etoile:['M84 94 L87 105 L98 108 L87 111 L84 122 L81 111 L70 108 L81 105 Z','#f6f1e6',''],panier:['M66 124 h22 l-3 12 h-16 Z','#a0804e','M68 124 Q77 110 86 124']}[c.mains];
     if(AC) s+=chemin(AC[0],'fill:'+AC[1])+chemin(AC[2],'fill:none;stroke:#3b2d20;stroke-width:2');
+    if(c.mains==='agneau'){
+      // petit agneau debout aux pieds, tourné vers l'extérieur
+      s+=chemin('M-9 180 h2.6 v16 h-2.6 Z M-3 181 h2.6 v15 h-2.6 Z M6 181 h2.6 v15 h-2.6 Z M11 180 h2.6 v16 h-2.6 Z','fill:#3b2d20');
+      s+=chemin(rond(-6,173,7)+' '+rond(2,169,8)+' '+rond(10,173,7)+' '+rond(2,178,7)+' '+rond(-4,180,5.5)+' '+rond(9,180,5.5)+' '+rond(15,170,3.2),'fill:#f6f1e6;stroke:#d6cdb8;stroke-width:.8');
+      s+=chemin('M-12 160 a5.5 7 0 1 0 0.1 0 Z','fill:#3b2d20')+chemin('M-15 160 L-22 157 L-17 164 Z','fill:#3b2d20');
+      s+=chemin(rond(-14,165,1.1),'fill:#f6f1e6')+chemin(rond(-9,159,4)+' '+rond(-5,162,3.2),'fill:#f6f1e6');
+    }
+    if(c.mains==='flute'){
+      // flûte de la bouche à la main, et quelques notes
+      var mx=large?80:74;
+      s+=chemin('M56 66 L'+mx+' 120','fill:none;stroke:#c9a54c;stroke-width:4;stroke-linecap:round');
+      s+=chemin(rond(56+(mx-56)*.45,66+54*.45,.9)+' '+rond(56+(mx-56)*.58,66+54*.58,.9)+' '+rond(56+(mx-56)*.71,66+54*.71,.9),'fill:#3b2d20');
+      s+=chemin('M84 72 m-4.4 0 a4.4 3.2 -20 1 0 8.8 0 a4.4 3.2 -20 1 0 -8.8 0 M98 58 m-4.4 0 a4.4 3.2 -20 1 0 8.8 0 a4.4 3.2 -20 1 0 -8.8 0','fill:#e3cf96;fill-opacity:.9')+chemin('M88 71 L88 54 Q93 55 94 60 M102 57 L102 40','fill:none;stroke:#e3cf96;stroke-opacity:.9;stroke-width:1.8');
+    }
     return s+'</svg>';
   }
 
@@ -256,7 +275,8 @@
       else if(C.partie==='teint'){z=2.2;y=62}
       else {z=1.8;y=72}
     }
-    if(C.etape===3&&C.zoomTete){z=2;y=50}
+    if(C.etape===3&&C.zoomCible==='tete'){z=2;y=50}
+    if(C.etape===3&&C.zoomCible==='pieds'){z=2.2;y=186}
     var dy=z===1?0:Math.round(125-(30+y));
     return {y:y,t:'translateY('+dy+'px) scale('+z+')'};
   }
@@ -329,7 +349,7 @@
           if(v==='ange') c.tete='aureole';
           if(v==='mage'){c.tete='couronne';c.mains='cadeau'}
         }
-        if(C.etape===3) C.zoomTete=(k==='tete'&&v!=='rien');
+        if(C.etape===3) C.zoomCible=(k==='tete'&&v!=='rien')?'tete':(k==='chaussures'?'pieds':null);
         refaire('[data-k="'+k+'"][data-v="'+v+'"]');
       });
     });
