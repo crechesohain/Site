@@ -48,19 +48,51 @@
     var BR={fins:['M37 45 L45 44 M55 44 L63 45',1.4],arques:['M36 46 Q41 41 46 45 M54 45 Q59 41 64 46',1.8],epais:['M36 45 L46 43.5 M54 43.5 L64 45',3.4],aucun:['',1]}[c.sourcils];
     var NO={point:[rond(50,59,1.3),''],bouton:[rond(50,59,2),''],arrondi:['','M46.5 59 Q50 63 53.5 59'],long:['','M50 53 L47.5 60 L51 60']}[c.nez];
     var MO={sourire:['','M43 65 Q50 71 57 65'],grand:['M42 64 Q50 76 58 64 Z',''],petite:['','M47 67 Q50 68.5 53 67'],etonne:[rond(50,67,2.6),'']}[c.bouche];
-    var longue=fille||c.tenue==='ange';
+    var T=c.tenue, longue=fille||T==='ange'||T==='mage', large=!fille, col=c.couleur;
     var s='<svg class="perso" width="'+w+'" height="'+h+'" viewBox="-20 0 140 200" aria-hidden="true" focusable="false">';
-    if(c.tenue==='ange') s+=chemin('M40 90 Q0 60 4 120 Q16 130 40 110 Z M60 90 Q100 60 96 120 Q84 130 60 110 Z','fill:#f6f1e6;fill-opacity:.9;stroke:#c9a54c;stroke-width:1.5');
+    if(T==='ange') s+=chemin('M40 90 Q0 60 4 120 Q16 130 40 110 Z M60 90 Q100 60 96 120 Q84 130 60 110 Z','fill:#f6f1e6;fill-opacity:.9;stroke:#c9a54c;stroke-width:1.5');
     if(!cache) s+=chemin(HB[c.cheveux]||'','fill:'+c.couleurCheveux);
+    // roi / reine mage : grande cape derrière
+    if(T==='mage'){ var cape=large?'M27 72 Q50 66 73 72 L92 194 L8 194 Z':'M36 72 L64 72 L92 194 L8 194 Z'; s+=chemin(cape,'fill:'+col)+chemin(cape,'fill:#000;fill-opacity:.35'); }
     if(!longue) s+=chemin('M35 160 h12 v32 h-12 Z M53 160 h12 v32 h-12 Z','fill:#3b2d20');
     s+=chemin('M34 194 a8 5 0 1 0 16 0 a8 5 0 1 0 -16 0 M50 194 a8 5 0 1 0 16 0 a8 5 0 1 0 -16 0','fill:'+({sandales:'#7a5c3e',bottes:'#2a2a2a',babouches:'#8a3b2e',pieds:c.teint}[c.chaussures]));
-    s+=chemin(longue?'M38 74 L62 74 L82 192 L18 192 Z':'M28 74 Q50 68 72 74 L74 166 L26 166 Z','fill:'+c.couleur);
-    var manches=longue?'M39 76 L22 122 L31 126 L45 92 Z M61 76 L78 122 L69 126 L55 92 Z':'M30 76 L15 122 L24 126 L37 94 Z M70 76 L85 122 L76 126 L63 94 Z';
-    s+=chemin(manches,'fill:'+c.couleur)+chemin(manches,'fill:#000;fill-opacity:.12');
-    if(c.tenue==='mage') s+=chemin('M50 76 L50 '+(longue?190:164),'fill:none;stroke:#c9a54c;stroke-width:3');
-    if(c.tenue==='musicien') s+=chemin('M40 78 L62 120','fill:none;stroke:#c9a54c;stroke-width:3');
-    if(c.tenue==='berger'||c.tenue==='village') s+=chemin(longue?'M33 108 h34 v6 h-34 Z':'M26.5 112 h47 v6 h-47 Z','fill:#3b2d20');
-    s+=chemin((longue?rond(26,125,5)+' '+rond(74,125,5):rond(19.5,125,5.5)+' '+rond(80.5,125,5.5))+' M50 70 L43 80 L57 80 Z','fill:'+c.teint);
+    // corps : robe longue (fille, ange, mage) ou tunique (garçon)
+    var corps=longue?(large?'M29 74 Q50 68 71 74 L82 192 L18 192 Z':'M38 74 L62 74 L82 192 L18 192 Z'):'M28 74 Q50 68 72 74 L74 166 L26 166 Z';
+    s+=chemin(corps,'fill:'+col);
+    var manches=T==='ange'
+      ?(large?'M30 76 L8 126 L30 129 L37 94 Z M70 76 L92 126 L70 129 L63 94 Z':'M39 76 L14 124 L34 129 L45 92 Z M61 76 L86 124 L66 129 L55 92 Z')
+      :(large?'M30 76 L15 122 L24 126 L37 94 Z M70 76 L85 122 L76 126 L63 94 Z':'M39 76 L22 122 L31 126 L45 92 Z M61 76 L78 122 L69 126 L55 92 Z');
+    s+=chemin(manches,'fill:'+col)+chemin(manches,'fill:#000;fill-opacity:.12');
+    var bas=longue?192:166;
+    if(T==='berger'){
+      // gilet en peau de mouton, ouvert devant, et ceinture de corde
+      var g=large?[29,71,114]:[35,65,112], fe='M'+g[0]+' 74 Q50 69 '+g[1]+' 74 L'+(g[1]-1)+' '+g[2]+' L'+(g[0]+1)+' '+g[2]+' Z';
+      for(var x=g[0]+4;x<=g[1]-4;x+=6.5) fe+=' '+rond(x,g[2],3.6);
+      s+=chemin(fe,'fill:#efe6d2;stroke:#cdbb94;stroke-width:.8')+chemin('M50 74 L50 '+(g[2]+3),'fill:none;stroke:'+col+';stroke-width:4');
+      s+=chemin(large?'M27 121 h46 v4 h-46 Z':'M33 119 h34 v4 h-34 Z','fill:#a0804e');
+    }
+    if(T==='village'){
+      // foulard noué au cou, ceinture et tablier
+      s+=chemin(large?'M26.5 108 h47 v6 h-47 Z':'M33 106 h34 v6 h-34 Z','fill:#3b2d20');
+      s+=chemin(large?'M36 114 L64 114 L66 160 L34 160 Z':'M39 112 L61 112 L69 184 L31 184 Z','fill:#efe6d2');
+      s+=chemin('M41 75 L59 75 L50 91 Z','fill:#8a3b2e');
+    }
+    if(T==='musicien'){
+      // col brodé, écharpe dorée, bandes au bas, tambourin à la hanche
+      s+=chemin('M37 75 Q50 88 63 75','fill:none;stroke:#c9a54c;stroke-width:3');
+      s+=chemin('M38 78 L66 130','fill:none;stroke:#c9a54c;stroke-width:3.5');
+      s+=chemin(longue?'M22 176 L78 176 M20.5 183 L79.5 183':'M26.5 154 L73.5 154 M26.7 160 L73.3 160','fill:none;stroke:#c9a54c;stroke-width:2.5');
+      s+=chemin(rond(14,146,10),'fill:#a0804e;stroke:#c9a54c;stroke-width:2')+chemin(rond(14,146,6.5),'fill:#efe6d2');
+    }
+    if(T==='mage'){
+      // galon doré, bande au bas, col d'hermine
+      s+=chemin('M50 80 L50 '+bas,'fill:none;stroke:#c9a54c;stroke-width:3')+chemin('M19 185 L81 185','fill:none;stroke:#c9a54c;stroke-width:5');
+      s+=chemin('M34 72 Q50 84 66 72 L66 80 Q50 93 34 80 Z','fill:#f6f1e6')+chemin(rond(40,81,1.1)+' '+rond(50,86,1.1)+' '+rond(60,81,1.1),'fill:#2a2a2a');
+    }
+    if(T==='ange') s+=chemin(large?'M31 102 h38 v4 h-38 Z':'M38 100 h24 v4 h-24 Z','fill:#c9a54c');
+    var mainsP=large?rond(19.5,125,5.5)+' '+rond(80.5,125,5.5):rond(26,125,5)+' '+rond(74,125,5);
+    if(T==='ange') mainsP=large?rond(19,127,5.5)+' '+rond(81,127,5.5):rond(24,126,5)+' '+rond(76,126,5);
+    s+=chemin(mainsP+' M50 70 L43 80 L57 80 Z','fill:'+c.teint);
     s+='<circle cx="50" cy="50" r="24" style="fill:'+c.teint+'"/>';
     if(cache) s+=chemin('M21 58 Q21 18 50 18 Q79 18 79 58 L76 100 L67 72 Q68 32 50 32 Q32 32 33 72 L24 100 Z','fill:#cdbb94');
     else s+=chemin(HF[avant]||'','fill:'+c.couleurCheveux);
@@ -291,8 +323,12 @@
       b.addEventListener('click',function(){
         var k=b.dataset.k, v=b.dataset.v, c=C.c; c[k]=v;
         if(k==='genre') c.cheveux=v==='fille'?'long':'court';
-        if(k==='tenue'&&v==='ange'){c.couleur='#efe6d2';c.tete='aureole'}
-        if(k==='tenue'&&v==='mage'){c.couleur='#6e3a3f';c.tete='couronne';c.mains='cadeau'}
+        if(k==='tenue'){
+          c.couleur={berger:'#7a5c3e',village:'#5d6b3a',musicien:'#3d4f7a',mage:'#6e3a3f',ange:'#efe6d2'}[v];
+          if(c.tete==='aureole'||c.tete==='couronne') c.tete='rien';
+          if(v==='ange') c.tete='aureole';
+          if(v==='mage'){c.tete='couronne';c.mains='cadeau'}
+        }
         if(C.etape===3) C.zoomTete=(k==='tete'&&v!=='rien');
         refaire('[data-k="'+k+'"][data-v="'+v+'"]');
       });
