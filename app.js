@@ -347,7 +347,10 @@ function majEtoile(y, max) {
       borner();
       plan.style.transition=anime?'transform .25s ease':'none';
       plan.style.transform='translate('+st.x+'px,'+st.y+'px) scale('+st.s+')';
-      plan.style.setProperty('--inv',(1/st.s).toFixed(4));
+      /* ronds : petits sur la photo entière, ils grandissent avec le zoom (taille à l'écran entre 12 et 36 px) */
+      var petit=st.s<1.15, px=petit?Math.max(8,Math.min(14,(st.w||visio.clientWidth)*0.012)):Math.max(20,Math.min(30,10*st.s));
+      plan.style.setProperty('--inv',(px/38/st.s).toFixed(4));
+      visio.classList.toggle('ronds-petits',petit);
       visio.classList.toggle('zoome',st.s>1.01);
       visio.style.touchAction=st.s>1.01?'none':'pan-y';
     }

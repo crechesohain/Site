@@ -418,3 +418,10 @@ body:has(.visionneuse.zoome) .zoom .voir-tout{visibility:visible;opacity:1}
 .carte-legende{text-align:center;font-size:.85rem;color:#b9c0cc;margin-top:6px}
 .carte-legende .pt{display:inline-block;width:12px;height:12px;border-radius:50%;margin:0 6px 0 14px;vertical-align:-1px;border:1.5px solid #e3cf96}
 .carte-legende .pt.ouverte{background:#c9a54c}.carte-legende .pt.bientot{background:#0f1a2e;border-color:#8c7640}
+
+/* ronds discrets tant qu'on n'a pas zoomé */
+.plan .rond::after{content:'';position:absolute;inset:-10px;border-radius:50%}
+.visionneuse.ronds-petits .rond{color:transparent;border-width:3px;background:rgba(227,207,150,.9);box-shadow:0 0 0 3px rgba(15,26,46,.55);animation:none}
+.visionneuse.ronds-petits .rond.attente{background:rgba(15,26,46,.85)}
+.visionneuse.ronds-petits .rond .bulle{display:none}
+.visionneuse.ronds-petits .rond{border-width:2px}
