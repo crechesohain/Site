@@ -175,13 +175,41 @@ function majEtoile(y, max) {
 
   function carteEglise(){
     titre('Carte de l\'église');
-    var h='<h1 class="titre-section">La carte de l\'église</h1><div class="sous-titre">Les sections</div>';
-    if(!sections.length) return h+carte('<p>Le plan de l\'église et de ses sections sera publié dès l\'installation de l\'exposition.</p>');
-    h+='<div class="liste grille">';
-    sections.forEach(function(s){
-      h+='<a class="vignette" href="#'+s.id+'"><img src="/mini/'+s.photo+'" alt="" width="92" height="92" decoding="async"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>';
-    });
-    return h+'</div><p class="aide" style="margin-top:16px">Le plan détaillé de l\'église arrive bientôt.</p>';
+    var h='<h1 class="titre-section">La carte de l\'église</h1><div class="sous-titre">Touchez une section</div>';
+    h+='<div class="carte-eglise" id="carteEglise" aria-busy="true"></div>';
+    h+='<p class="carte-info" id="carteInfo" aria-live="polite">Choisissez une section dorée pour voir ses crèches.</p>';
+    h+='<p class="carte-legende"><span class="pt ouverte"></span>section en ligne <span class="pt bientot"></span>bientôt en ligne</p>';
+    var autres=sections.filter(function(s){return !/^s-\d+$/.test(s.id)});
+    if(autres.length){
+      h+='<div class="sous-titre" style="margin-top:22px">Autres ensembles</div><div class="liste grille">';
+      autres.forEach(function(s){h+='<a class="vignette" href="#'+s.id+'"><img src="/mini/'+s.photo+'" alt="" width="92" height="92" decoding="async"><div><b>'+esc(s.titre)+'</b><span>'+s.points.length+' crèches</span></div></a>'});
+      h+='</div>';
+    }
+    return h;
+  }
+  var svgCarte=null;
+  function brancherCarte(){
+    var box=document.getElementById('carteEglise'); if(!box) return;
+    function poser(txt){
+      if(!document.body.contains(box)) return;
+      box.innerHTML=txt; box.removeAttribute('aria-busy');
+      var info=document.getElementById('carteInfo');
+      box.querySelectorAll('.zone').forEach(function(z){
+        var id=z.getAttribute('data-s'), s=sections.filter(function(x){return x.id===id})[0], num=id.slice(2);
+        z.classList.add(s?'ouverte':'bientot');
+        var lib=s?('Section '+num+' – '+s.titre+' ('+s.points.length+' crèches)'):('Section '+num+' – bientôt en ligne');
+        z.setAttribute('aria-label',lib); var t=z.querySelector('title'); if(t) t.textContent=lib;
+        z.addEventListener('click',function(e){
+          if(s) return;
+          e.preventDefault();
+          box.querySelectorAll('.zone.choisie').forEach(function(x){x.classList.remove('choisie')});
+          z.classList.add('choisie');
+          info.textContent='Section '+num+' : la photo et les fiches de cette section arrivent bientôt.';
+        });
+      });
+    }
+    if(svgCarte) poser(svgCarte);
+    else fetch('/carte.svg',{cache:'no-cache'}).then(function(r){return r.text()}).then(function(t){svgCarte=t;poser(t)}).catch(function(){box.innerHTML='<p class="aide">Le plan n\'a pas pu être chargé.</p>'});
   }
 
   function section(s){
@@ -284,6 +312,10 @@ function majEtoile(y, max) {
   }
 
   function introuvable(id){
+    if(/^s-/i.test(id)){
+      titre('Section en préparation');
+      return retour('carte','Carte de l\'église')+carte('<h1>Section en préparation</h1><p>Les crèches de cette section ('+esc(id.toUpperCase())+') seront bientôt en ligne. Revenez dans quelques jours&nbsp;!</p><p><a class="bouton" href="#carte">Voir la carte de l\'église</a></p>');
+    }
     var estFiche=/^C-/i.test(id);
     titre(estFiche?'Fiche en préparation':'Page introuvable');
     var h=retour('creches','Toutes les crèches');
@@ -393,6 +425,7 @@ function majEtoile(y, max) {
   addEventListener('resize',function(){if(V)V.dims()});
   function brancher(){
     visionneuse();
+    brancherCarte();
     document.querySelectorAll('[data-retour]').forEach(function(a){
       a.addEventListener('click',function(e){
         if(precedent===a.dataset.retour||(precedent===''&&a.dataset.retour==='')){e.preventDefault();history.back()}
@@ -437,7 +470,7 @@ function majEtoile(y, max) {
     if(remonter!==false){precedent=courant;courant=id}
     vue.innerHTML=c?fiche(c):(s?section(s):(pages[id]?pages[id]():(/^(C-|s-)/i.test(id)?introuvable(id):accueil())));
     /* onglet actif : la fiche appartient aux « crèches », une section à la « carte » */
-    var rub=c?'creches':(s?'carte':id);
+    var rub=c?'creches':((s||/^s-/i.test(id))?'carte':id);
     document.querySelectorAll('#menu a').forEach(function(a){
       var on=a.getAttribute('href')==='/#'+rub||(rub===''&&a.getAttribute('href')==='/#');
       a.classList.toggle('actif',on);
