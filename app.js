@@ -327,6 +327,11 @@ function majEtoile(y, max) {
 
   /* ---------- visionneuse de section : zoom au pincement, glisser, double-clic ---------- */
   var V=null;
+  /* version haute définition de la photo de section, chargée seulement quand on zoome */
+  function hd(img){
+    var s=secCour; if(!s||!s.photoHD||img.dataset.hd) return;
+    img.dataset.hd='1'; var i=new Image(); i.onload=function(){img.src=i.src}; i.src='/'+s.photoHD;
+  }
   /* ---------- photo de section en plein écran (lecture facile au téléphone) ---------- */
   function fermerPlein(){
     var o=document.getElementById('plein'); if(!o) return;
@@ -355,15 +360,15 @@ function majEtoile(y, max) {
     }
     function pose(anime){
       borne();
-      pl.style.transition=anime?'transform .25s ease':'none';
-      pl.style.transform='translate('+z.x+'px,'+z.y+'px) scale('+z.s+')';
-      pl.style.setProperty('--inv',(1/z.s).toFixed(4));
+      pl.style.transition=anime?'transform .25s ease, width .25s ease, height .25s ease':'none';
+      pl.style.width=(z.W*z.s)+'px'; pl.style.height=(z.H*z.s)+'px';
+      pl.style.transform='translate('+z.x+'px,'+z.y+'px)';
+      if(z.W*z.s>2600||z.s>1.4) hd(im);
     }
     function taille(){
       if(!im.naturalWidth) return;
       var r=im.naturalWidth/im.naturalHeight, dh=d.clientHeight, dw=d.clientWidth;
       z.H=dh; z.W=Math.round(dh*r);
-      pl.style.width=z.W+'px'; pl.style.height=z.H+'px';
       z.min=Math.min(1,dw/z.W); z.max=3;
       z.s=1; z.x=dw/2-(typeof fx==='number'?fx:0.5)*z.W; z.y=0; pose(false);
     }
@@ -422,11 +427,13 @@ function majEtoile(y, max) {
     }
     function appliquer(anime){
       borner();
-      plan.style.transition=anime?'transform .25s ease':'none';
-      plan.style.transform='translate('+st.x+'px,'+st.y+'px) scale('+st.s+')';
+      plan.style.transition=anime?'transform .25s ease, width .25s ease, height .25s ease':'none';
+      plan.style.width=(st.w*st.s)+'px'; plan.style.height=(st.h*st.s)+'px';
+      plan.style.transform='translate('+st.x+'px,'+st.y+'px)';
+      if(st.s>1.4) hd(img);
       /* ronds : petits sur la photo entière, ils grandissent avec le zoom (taille à l'écran entre 12 et 36 px) */
       var petit=st.s<1.15, px=petit?Math.max(8,Math.min(14,(st.w||visio.clientWidth)*0.012)):Math.max(20,Math.min(30,10*st.s));
-      plan.style.setProperty('--inv',(px/38/st.s).toFixed(4));
+      plan.style.setProperty('--inv',(px/38).toFixed(4));
       visio.classList.toggle('ronds-petits',petit);
       visio.classList.toggle('zoome',st.s>1.01);
       visio.style.touchAction=st.s>1.01?'none':'pan-y';
