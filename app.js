@@ -342,12 +342,58 @@ function majEtoile(y, max) {
       if(c) h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'</a>';
       else h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
     });
-    h+='</div></div><p class="plein-aide">Faites glisser pour parcourir · touchez un numéro pour ouvrir la fiche</p>';
+    h+='</div></div><p class="plein-aide">Glissez pour parcourir · pincez pour zoomer · touchez un numéro</p>';
     var o=document.createElement('div'); o.id='plein'; o.className='plein'; o.setAttribute('role','dialog'); o.setAttribute('aria-modal','true'); o.setAttribute('aria-label','Photo de la section en grand');
     o.innerHTML=h; document.body.appendChild(o); document.documentElement.classList.add('plein-ouvert');
-    var d=document.getElementById('pleinDefile'), im=o.querySelector('img');
-    function centrer(){ d.scrollLeft=Math.max(0,(typeof fx==='number'?fx:0.5)*im.clientWidth-d.clientWidth/2); }
-    if(im.complete) centrer(); else im.addEventListener('load',centrer);
+    var d=document.getElementById('pleinDefile'), im=o.querySelector('img'), pl=o.querySelector('.plein-plan');
+    /* zoom et déplacement gérés ici (pas le zoom de la page) */
+    var z={s:1,x:0,y:0,W:0,H:0,min:1,max:3}, pts={}, g=null, bouge=false;
+    function borne(){
+      var dw=d.clientWidth, dh=d.clientHeight, w=z.W*z.s, hh=z.H*z.s;
+      z.x = w<=dw ? (dw-w)/2 : Math.min(0,Math.max(dw-w,z.x));
+      z.y = hh<=dh ? (dh-hh)/2 : Math.min(0,Math.max(dh-hh,z.y));
+    }
+    function pose(anime){
+      borne();
+      pl.style.transition=anime?'transform .25s ease':'none';
+      pl.style.transform='translate('+z.x+'px,'+z.y+'px) scale('+z.s+')';
+      pl.style.setProperty('--inv',(1/z.s).toFixed(4));
+    }
+    function taille(){
+      if(!im.naturalWidth) return;
+      var r=im.naturalWidth/im.naturalHeight, dh=d.clientHeight, dw=d.clientWidth;
+      z.H=dh; z.W=Math.round(dh*r);
+      pl.style.width=z.W+'px'; pl.style.height=z.H+'px';
+      z.min=Math.min(1,dw/z.W); z.max=3;
+      z.s=1; z.x=dw/2-(typeof fx==='number'?fx:0.5)*z.W; z.y=0; pose(false);
+    }
+    if(im.complete) taille(); else im.addEventListener('load',taille);
+    addEventListener('resize',function rz(){ if(!document.body.contains(o)){removeEventListener('resize',rz);return} taille(); });
+    function loc(e){var r=d.getBoundingClientRect();return {x:e.clientX-r.left,y:e.clientY-r.top}}
+    function li(){return Object.keys(pts).map(function(k){return pts[k]})}
+    function zoome(n,cx,cy,anime){ n=Math.max(z.min,Math.min(z.max,n)); var k=n/z.s; z.x=cx-(cx-z.x)*k; z.y=cy-(cy-z.y)*k; z.s=n; pose(anime); }
+    d.addEventListener('pointerdown',function(e){
+      pts[e.pointerId]=loc(e); var l=li();
+      if(l.length===1){ bouge=false; g={t:'g',px:l[0].x,py:l[0].y,x:z.x,y:z.y}; }
+      else if(l.length===2){ bouge=true; g={t:'p',d:Math.hypot(l[0].x-l[1].x,l[0].y-l[1].y),s:z.s,cx:(l[0].x+l[1].x)/2,cy:(l[0].y+l[1].y)/2,x:z.x,y:z.y}; }
+    });
+    d.addEventListener('pointermove',function(e){
+      if(!pts[e.pointerId]||!g) return; pts[e.pointerId]=loc(e); var l=li();
+      if(g.t==='p'&&l.length===2){
+        var dd=Math.hypot(l[0].x-l[1].x,l[0].y-l[1].y), cx=(l[0].x+l[1].x)/2, cy=(l[0].y+l[1].y)/2;
+        var n=Math.max(z.min,Math.min(z.max,g.s*dd/g.d)), k=n/g.s;
+        z.s=n; z.x=cx-(g.cx-g.x)*k; z.y=cy-(g.cy-g.y)*k; pose(false);
+      } else if(g.t==='g'&&l.length===1){
+        var dx=l[0].x-g.px, dy=l[0].y-g.py;
+        if(!bouge&&Math.abs(dx)+Math.abs(dy)>8){ bouge=true; try{d.setPointerCapture(e.pointerId)}catch(_){} }
+        if(bouge){ z.x=g.x+dx; z.y=g.y+dy; pose(false); }
+      }
+    });
+    function lache(e){ delete pts[e.pointerId]; var l=li(); if(l.length===1) g={t:'g',px:l[0].x,py:l[0].y,x:z.x,y:z.y}; else if(!l.length) g=null; }
+    d.addEventListener('pointerup',lache); d.addEventListener('pointercancel',lache);
+    d.addEventListener('click',function(e){ if(bouge){e.preventDefault();e.stopPropagation();bouge=false} },true);
+    d.addEventListener('dblclick',function(e){ if(e.target.closest&&e.target.closest('.rond')) return; var p=loc(e); zoome(z.s<1.5?2:1,p.x,p.y,true); });
+    d.addEventListener('wheel',function(e){ e.preventDefault(); var p=loc(e), dy=e.deltaMode===1?e.deltaY*16:e.deltaY; zoome(z.s*Math.exp(-Math.max(-120,Math.min(120,dy))*(e.ctrlKey?0.01:0.0025)),p.x,p.y,false); },{passive:false});
     document.getElementById('pleinFermer').addEventListener('click',fermerPlein);
     o.querySelectorAll('a.rond').forEach(function(a){a.addEventListener('click',function(){fermerPlein()})});
     document.getElementById('pleinFermer').focus({preventScroll:true});
