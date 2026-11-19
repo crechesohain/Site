@@ -200,7 +200,7 @@ function majEtoile(y, max) {
       }
     });
     h+='</div></div><div class="zoom"><button type="button" class="voir-tout" data-z="reset">Voir toute la photo</button></div>';
-    h+='<p class="aide">Touchez un rond pour ouvrir la fiche. Pincez la photo pour zoomer'+(matchMedia('(hover:hover)').matches?' (ou double-cliquez, puis faites glisser)':'')+'.</p>';
+    h+='<p class="aide">Touchez un rond pour ouvrir la fiche. Pincez la photo pour zoomer'+(matchMedia('(hover:hover)').matches?' (sur ordinateur : molette pour zoomer, puis faites glisser)':'')+'.</p>';
     return h+'<div class="liste grille">'+l+'</div>';
   }
 
@@ -365,9 +365,13 @@ function majEtoile(y, max) {
       var p=local(e); if(st.s>1.01){st.s=1;st.x=0;st.y=0;appliquer(true)} else zoomer(2.5,p.x,p.y,true);
     });
     // molette : la page défile normalement ; seul le pincement du pavé tactile (ctrl + molette) zoome
+    // molette (ordinateur) : vers le haut = zoom avant ; vers le bas = zoom arrière,
+    // puis, une fois revenu à la vue d'ensemble, la page reprend son défilement normal
     visio.addEventListener('wheel',function(e){
-      if(!e.ctrlKey) return;
-      e.preventDefault(); var p=local(e); zoomer(Math.exp(-e.deltaY*0.01),p.x,p.y,false);
+      var dy=e.deltaMode===1?e.deltaY*16:e.deltaY;
+      if(!e.ctrlKey&&dy>0&&st.s<=1.01) return;
+      e.preventDefault(); var p=local(e);
+      zoomer(Math.exp(-Math.max(-120,Math.min(120,dy))*(e.ctrlKey?0.01:0.0025)),p.x,p.y,false);
     },{passive:false});
     document.querySelectorAll('.zoom button').forEach(function(b){
       b.addEventListener('click',function(){
