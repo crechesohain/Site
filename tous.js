@@ -168,7 +168,6 @@
     h+='</div></div></div>';
     var e=E[choixEtoile];
     h+='<div class="tous-intention" role="status" id="intention">'+(e?'<small>Étoile allumée par '+esc(e.signature||'Anonyme')+'</small><p>«&nbsp;'+esc(e.texte)+'&nbsp;»</p>':'<small>Touchez une étoile</small><p>Chaque étoile porte l\'intention d\'un visiteur.</p>')+'</div>';
-    h+='<p class="aide">'+P.length+' personnage'+(P.length>1?'s':'')+' · '+(matchMedia('(hover:hover)').matches?'Passez sur un personnage pour voir son nom.':'Touchez un personnage pour voir son nom, faites glisser la fresque pour la parcourir.')+' Les étoiles s\'allument après relecture par un bénévole.</p>';
     return h;
   }
   var largeurRendue=0, minuteur=null;
