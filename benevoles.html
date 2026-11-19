@@ -42,7 +42,7 @@ body{background:var(--nuit);color:var(--encre);min-height:100vh;padding:0}
 <header class="b-tete"><h1>Espace bénévoles · La crèche de tous</h1><div class="b-droite" id="droite"></div></header>
 <main class="b-corps" id="corps"><p class="b-vide">Chargement…</p></main>
 <script src="/tous-config.js?v=2026111916"></script>
-<script src="/tous.js?v=2026111917"></script>
+<script src="/tous.js?v=2026111918"></script>
 <script>
 (function(){
   var CFG=window.TOUS_CONFIG, corps=document.getElementById('corps'), droite=document.getElementById('droite');
@@ -60,7 +60,7 @@ body{background:var(--nuit);color:var(--encre);min-height:100vh;padding:0}
       var h={apikey:CFG.cle,Authorization:'Bearer '+t,'Content-Type':'application/json','Accept-Profile':'creches','Content-Profile':'creches'};
       if(opt.prefer) h.Prefer=opt.prefer;
       return fetch(CFG.url+'/rest/v1/'+chemin,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined,cache:'no-store'});
-    }).then(function(r){ if(r.status===401){sortir();throw new Error('session')} if(!r.ok) return r.text().then(function(x){throw new Error(x)}); return r.status===204?null:r.json(); });
+    }).then(function(r){ if(r.status===401){sortir();throw new Error('session')} if(!r.ok) return r.text().then(function(x){throw new Error(x)}); return r.text().then(function(t){return t?JSON.parse(t):null}); });
   }
   function sortir(){S=null;try{sessionStorage.removeItem('tous-session')}catch(e){}connexion()}
 

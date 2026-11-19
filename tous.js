@@ -83,7 +83,7 @@
     var h={'apikey':CFG.cle,'Content-Type':'application/json','Accept-Profile':'creches','Content-Profile':'creches'};
     if(opt.prefer) h.Prefer=opt.prefer;
     return fetch(CFG.url+'/rest/v1/'+chemin,{method:opt.method||'GET',headers:h,body:opt.body?JSON.stringify(opt.body):undefined,cache:'no-store'})
-      .then(function(r){ if(!r.ok) return r.text().then(function(t){var e=new Error(t||r.status);e.status=r.status;throw e}); return r.status===204?null:r.json(); });
+      .then(function(r){ if(!r.ok) return r.text().then(function(t){var e=new Error(t||r.status);e.status=r.status;throw e}); return r.text().then(function(t){return t?JSON.parse(t):null}); });
   }
   var donnees={perso:null,etoiles:null}, chargement=false;
   function charger(){
