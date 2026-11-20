@@ -441,3 +441,7 @@ html.plein-ouvert,html.plein-ouvert body{overflow:hidden}
 .plein-aide{text-align:center;color:#b9c0cc;font-size:.95rem;padding:10px 12px;padding-bottom:max(10px,env(safe-area-inset-bottom));background:#0f1a2e;margin:0}
 
 .plein{touch-action:none}
+
+/* plein écran : bouton Fermer toujours visible, par-dessus la photo */
+.plein-tete{position:relative;z-index:3}
+.plein-fermer-flottant{position:fixed;z-index:1001;right:max(14px,env(safe-area-inset-right));bottom:calc(64px + env(safe-area-inset-bottom));width:60px;height:60px;border-radius:50%;border:2px solid #0f1a2e;background:var(--or-doux);color:#0f1a2e;font:700 26px/1 'Lato',sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.5);cursor:pointer;touch-action:manipulation}

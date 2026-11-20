@@ -334,9 +334,12 @@ function majEtoile(y, max) {
     img.dataset.hd='1'; var i=new Image(); i.onload=function(){img.src=i.src}; i.src='/'+s.photoHD;
   }
   /* ---------- photo de section en plein écran (lecture facile au téléphone) ---------- */
+  function bloqueGeste(e){ e.preventDefault(); }
   function fermerPlein(){
     var o=document.getElementById('plein'); if(!o) return;
     o.remove(); document.documentElement.classList.remove('plein-ouvert');
+    document.removeEventListener('gesturestart',bloqueGeste); document.removeEventListener('gesturechange',bloqueGeste);
+    var m=document.querySelector('meta[name=viewport]'); if(m&&m.dataset.avant){ m.content=m.dataset.avant; }
     var b=document.getElementById('agrandir'); if(b) b.focus({preventScroll:true});
   }
   function ouvrirPlein(fx){
@@ -348,9 +351,11 @@ function majEtoile(y, max) {
       if(c) h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'</a>';
       else h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
     });
-    h+='</div></div><p class="plein-aide">Glissez pour parcourir · pincez pour zoomer · touchez un numéro</p>';
+    h+='</div></div><button type="button" class="plein-fermer-flottant" id="pleinFermer2" aria-label="Fermer la photo">✕</button><p class="plein-aide">Glissez pour parcourir · pincez pour zoomer · touchez un numéro</p>';
     var o=document.createElement('div'); o.id='plein'; o.className='plein'; o.setAttribute('role','dialog'); o.setAttribute('aria-modal','true'); o.setAttribute('aria-label','Photo de la section en grand');
     o.innerHTML=h; document.body.appendChild(o); document.documentElement.classList.add('plein-ouvert');
+    document.addEventListener('gesturestart',bloqueGeste,{passive:false}); document.addEventListener('gesturechange',bloqueGeste,{passive:false});
+    var m=document.querySelector('meta[name=viewport]'); if(m){ if(!m.dataset.avant) m.dataset.avant=m.content; m.content=m.dataset.avant+', maximum-scale=1, user-scalable=no'; }
     var d=document.getElementById('pleinDefile'), im=o.querySelector('img'), pl=o.querySelector('.plein-plan');
     /* zoom et déplacement gérés ici (pas le zoom de la page) */
     var z={s:1,x:0,y:0,W:0,H:0,min:1,max:3}, pts={}, g=null, bouge=false;
@@ -401,6 +406,7 @@ function majEtoile(y, max) {
     d.addEventListener('dblclick',function(e){ if(e.target.closest&&e.target.closest('.rond')) return; var p=loc(e); zoome(z.s<1.5?2:1,p.x,p.y,true); });
     d.addEventListener('wheel',function(e){ e.preventDefault(); var p=loc(e), dy=e.deltaMode===1?e.deltaY*16:e.deltaY; zoome(z.s*Math.exp(-Math.max(-120,Math.min(120,dy))*(e.ctrlKey?0.01:0.0025)),p.x,p.y,false); },{passive:false});
     document.getElementById('pleinFermer').addEventListener('click',fermerPlein);
+    document.getElementById('pleinFermer2').addEventListener('click',fermerPlein);
     o.querySelectorAll('a.rond').forEach(function(a){a.addEventListener('click',function(){fermerPlein()})});
     document.getElementById('pleinFermer').focus({preventScroll:true});
   }
@@ -459,6 +465,7 @@ function majEtoile(y, max) {
       if(!pts[e.pointerId]||!geste) return;
       pts[e.pointerId]=local(e);
       var l=liste();
+      if(geste.type==='pince'&&l.length===2&&e.pointerType==='touch'){ pts={}; geste=null; bouge=true; ouvrirPlein(0.5); return; }
       if(geste.type==='pince'&&l.length===2){
         bouge=true;
         var d=Math.hypot(l[0].x-l[1].x,l[0].y-l[1].y), cx=(l[0].x+l[1].x)/2, cy=(l[0].y+l[1].y)/2;
