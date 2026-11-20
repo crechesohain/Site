@@ -117,7 +117,7 @@ function majEtoile(y, max) {
     return 'Origine à préciser';
   }
   function vignette(c,num){
-    return '<a class="vignette" href="#'+c.id+'"><img src="/mini/'+c.photo+'" alt="" width="92" height="92" decoding="async">'+(num?'<i>'+num+'</i>':'')+'<div><b>'+esc(c.titre)+'</b><span>'+esc(c.pays)+'</span></div></a>';
+    return '<a class="vignette" href="#'+c.id+'"><img src="/mini/'+c.photo+'" alt="" width="92" height="92" decoding="async">'+(num?'<i>'+num+'</i>':'')+'<div><b>'+esc(c.titre)+'</b><span>'+(c.type==='ambiance'?'Mise en ambiance · ':'')+esc(c.pays)+'</span></div></a>';
   }
   function carte(h){return '<article class="carte"><div class="contenu texte">'+h+'</div></article>'}
   function titre(t,sous){
@@ -223,7 +223,7 @@ function majEtoile(y, max) {
     s.points.forEach(function(p,i){
       var c=trouve(p.id), n=(c&&c.numero)?c.numero:(i+1);
       if(c){
-        h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'<span class="bulle" aria-hidden="true">'+esc(c.titre)+'<small>'+esc(String(c.pays).split(' · ')[0])+'</small></span></a>';
+        h+='<a class="rond'+(c.type==='ambiance'?' ambiance':'')+'" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'<span class="bulle" aria-hidden="true">'+esc(c.titre)+'<small>'+esc(String(c.pays).split(' · ')[0])+'</small></span></a>';
         l+=vignette(c,n);
       } else {
         h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" title="Fiche en préparation" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
@@ -236,12 +236,13 @@ function majEtoile(y, max) {
   }
 
   function fiche(c){
-    titre(c.titre, c.numero?('Crèche n° '+c.numero):'');
+    var estAmb=c.type==='ambiance';
+    titre(c.titre, c.numero?((estAmb?'Mise en ambiance n° ':'Crèche n° ')+c.numero):'');
     var sp=sectionDe(c.id), h;
     if(sp&&precedent===sp.id) h=retour(sp.id,'Retour à la section');
     else h=retour('creches','Toutes les crèches');
     h+='<article class="carte"><img class="photo" src="/'+c.photo+'" alt="'+esc(c.alt)+'" width="1200" height="1260"><div class="contenu">';
-    h+='<h1>'+esc(c.titre)+'</h1><div class="pays">'+esc(c.pays)+'</div>'+SEP+'<dl class="infos">';
+    h+=(estAmb?'<div class="badge-amb">Mise en ambiance</div>':'')+'<h1>'+esc(c.titre)+'</h1><div class="pays">'+esc(c.pays)+'</div>'+(estAmb?'<p class="note-amb">Ce décor n\'est pas une crèche : il n\'y a pas d\'Enfant Jésus. Il fait partie de l\'exposition pour l\'atmosphère de Noël qu\'il raconte.</p>':'')+SEP+'<dl class="infos">';
     c.infos.forEach(function(i){h+='<div><dt>'+esc(i[0])+'</dt><dd>'+esc(i[1])+'</dd></div>'});
     h+='</dl>'+SEP;
     c.sections.forEach(function(s,n){
@@ -250,10 +251,10 @@ function majEtoile(y, max) {
       h+='</section>';
     });
     h+='<div class="encart"><h2>✦ Le saviez-vous&nbsp;?</h2><p>'+esc(c.saviez)+'</p></div>';
-    h+='<blockquote>«&nbsp;'+esc(c.verset.texte)+'&nbsp;»<cite>'+esc(c.verset.ref)+'</cite></blockquote>';
+    if(c.verset) h+='<blockquote>«&nbsp;'+esc(c.verset.texte)+'&nbsp;»<cite>'+esc(c.verset.ref)+'</cite></blockquote>';
     var s=sectionDe(c.id);
     if(s) h+='<a class="lien-section" href="#'+s.id+'">Voir dans sa section · '+esc(s.titre)+'</a>';
-    h+='<p class="lien-info">Vous en savez plus sur cette crèche&nbsp;? <a href="#contact">Écrivez-nous</a></p>';
+    h+='<p class="lien-info">Vous en savez plus sur '+(estAmb?'ce décor':'cette crèche')+'&nbsp;? <a href="#contact">Écrivez-nous</a></p>';
     return h+'</div></article>';
   }
 
@@ -348,7 +349,7 @@ function majEtoile(y, max) {
     h+='<div class="plein-defile" id="pleinDefile"><div class="plein-plan"><img src="/'+s.photo+'" alt="Vue d\'ensemble de la section '+esc(s.titre)+'">';
     s.points.forEach(function(p,i){
       var c=trouve(p.id), n=(c&&c.numero)?c.numero:(i+1);
-      if(c) h+='<a class="rond" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'</a>';
+      if(c) h+='<a class="rond'+(c.type==='ambiance'?' ambiance':'')+'" href="#'+c.id+'" style="left:'+p.x+'%;top:'+p.y+'%" aria-label="'+n+' – '+esc(c.titre)+'">'+n+'</a>';
       else h+='<span class="rond attente" style="left:'+p.x+'%;top:'+p.y+'%" role="img" aria-label="'+n+' – fiche en préparation">'+n+'</span>';
     });
     h+='</div></div><button type="button" class="plein-fermer-flottant" id="pleinFermer2" aria-label="Fermer la photo">✕</button><p class="plein-aide">Glissez pour parcourir · pincez pour zoomer · touchez un numéro</p>';
