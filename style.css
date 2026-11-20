@@ -449,4 +449,6 @@ html.plein-ouvert,html.plein-ouvert body{overflow:hidden}
 /* mises en ambiance */
 .badge-amb{display:inline-block;margin-bottom:8px;padding:4px 12px;border:1px solid var(--or);border-radius:999px;font:600 .72rem 'Lato',sans-serif;letter-spacing:.14em;text-transform:uppercase;color:#7d6220}
 .note-amb{font-style:italic;color:#5b5446;margin:10px 0 0}
-.rond.ambiance{border-style:dashed}
+.rond.ambiance,.visionneuse .rond.ambiance,.plein .rond.ambiance{background:rgba(214,220,228,.95);border:2px solid #f4f6f9;border-style:solid;color:#1b2638}
+.visionneuse.ronds-petits .rond.ambiance{background:rgba(214,220,228,.95);color:transparent}
+.rond.ambiance:hover,.rond.ambiance:focus-visible{background:#fff;color:#0f1a2e}
